@@ -1,0 +1,17 @@
+.list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.superlist{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.title{
+    font-size: 20px;
+    font-weight: bold;
+}

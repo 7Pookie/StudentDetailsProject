@@ -1,0 +1,33 @@
+.login{
+    display:flex;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+}
+
+.head{
+    font-size: 40px;
+    font-weight: 700;
+    color: black;
+    align-self: center;
+}
+
+.button {
+    background-color: black;
+    color: white;
+    font-size: 16px;  /* Reduced size for better proportions */
+    font-weight: 600;
+    border-radius: 8px; /* Slightly smaller for a cleaner look */
+    padding: 12px 20px; /* Adjusted padding */
+    min-width: 150px;  /* Ensures a minimum width */
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.button:hover {
+    transform: scale(1.05); /* Subtle hover effect */
+    box-shadow: 2px 2px 5px rgb(183, 178, 178);
+}

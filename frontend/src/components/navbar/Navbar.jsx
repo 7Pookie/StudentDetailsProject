@@ -4,12 +4,12 @@ const Navbar = () => {
     return (
         <div className="navbar border border-b-2 bg-black ">
         <div className="logo">
-            <Link to="/" style={{ textDecoration: "none" }}>
+            <Link to="/student/dashboard" style={{ textDecoration: "none" }}>
                 <span className="logo-entry">EduTech</span>
             </Link>
         </div>
         <div className="links">
-            <Link to="/" style={{ textDecoration: "none" }}>
+            <Link to="/student/dashboard" style={{ textDecoration: "none" }}>
                 <div className="flex justify-between items-center gap-1.5">
                 <div className="h-[5px] w-[5px] rounded-full bg-green-600 shadow-md shadow-green-700 transition-all duration-200 hover:bg-green-900"></div>
                     <span className="entries hover:">Home</span>

@@ -13,7 +13,7 @@ const AdminDashboard = () => {
             <h1 className='font-semibold'>kranti_b220970cs@gmail.com</h1>   
         </div>    
         <div className=' flex justify-between mt-10 gap-10'>
-        <Link to="/AddAnnouncements" style={{ textDecoration: "none" }}>
+        <Link to="/admin/add-announcements" style={{ textDecoration: "none" }}>
           <Button buttonText='Add Announcements'/>
           </Link>
         </div>     

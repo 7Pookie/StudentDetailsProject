@@ -1,13 +1,14 @@
-import React from 'react'
+import React from 'react';
 
-const Button = ({ buttonText = "Details" }) => {
+const Button = ({ buttonText = "Details", onClick, type = "button", disabled }) => {
   return (
-    <div>
-      <button className="shadow-lg shadow-black/50 w-full px-6 py-2 text-white bg-black border border-black dark:border-white dark:bg-black dark:text-white rounded-lg font-bold transform hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 transition duration-300">
-        {buttonText}
-      </button>
-    </div>
-  )
-}
+    <button className="px-4 py-2 w-auto min-w-[120px] max-w-[200px] text-white bg-black border border-black dark:border-white dark:bg-black dark:text-white rounded-lg font-bold transition-transform duration-300 hover:-translate-y-1 hover:shadow-md"
+    type={type} // ✅ Ensures button type is explicitly controlled
+            onClick={onClick}
+            disabled={disabled}>
+      {buttonText}
+    </button>
+  );
+};
 
-export default Button
+export default Button;
