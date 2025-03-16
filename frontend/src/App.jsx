@@ -29,7 +29,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Landing />}/> 
-        <Route path='/Profile' element={<Profile />} />
+        <Route path='/student/profile/:studentId' element={<Profile />} />
         <Route path='/student/update-details' element={<UpdateDetails />} />
         <Route path='/student/view-details' element={<ViewDetails />} />
         <Route path='/Approvals' element={<Approvals />} />

@@ -15,7 +15,7 @@ const Navbar = () => {
                     <span className="entries hover:">Home</span>
                 </div>
             </Link>
-            <Link to="/Profile" style={{ textDecoration: "none" }}>
+            <Link to="/student/profile/:studentId" style={{ textDecoration: "none" }}>
             <div className="flex justify-between items-center gap-1.5">
             <div className="h-[5px] w-[5px] rounded-full bg-green-600 shadow-md shadow-green-700 transition-all duration-200 hover:bg-green-900"></div>
                     <span className="entries">Profile</span>
