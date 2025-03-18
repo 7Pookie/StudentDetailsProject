@@ -4,12 +4,16 @@ import com.example.studentDetailsBackEnd.DTO.TechnicalDetailRequest;
 import com.example.studentDetailsBackEnd.Model.TechnicalDetail;
 import com.example.studentDetailsBackEnd.Model.EventCategory;
 import com.example.studentDetailsBackEnd.Model.Student;
+import com.example.studentDetailsBackEnd.Model.Faculty;
 import com.example.studentDetailsBackEnd.Model.TechnicalEvents;
+import com.example.studentDetailsBackEnd.Model.Request;
+import com.example.studentDetailsBackEnd.repository.RequestRepository;
 import com.example.studentDetailsBackEnd.Service.TechnicalDetailService;
 import com.example.studentDetailsBackEnd.repository.EventCategoryRepository;
 import com.example.studentDetailsBackEnd.repository.TechnicalEventsRepository;
 import com.example.studentDetailsBackEnd.repository.TechnicalDetailRepository;
 import com.example.studentDetailsBackEnd.repository.StudentRepository;
+import com.example.studentDetailsBackEnd.repository.TableDetailsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +42,12 @@ public class TechnicalDetailController {
     private StudentRepository studentRepository; 
 
     @Autowired
+    private TableDetailsRepository tableDetailsRepository;
+
+    @Autowired
+    private RequestRepository requestRepository;
+
+    @Autowired
     public TechnicalDetailController(TechnicalDetailService technicalDetailService, 
                                      TechnicalDetailRepository technicalDetailRepository) {
         this.technicalDetailService = technicalDetailService;
@@ -58,6 +68,12 @@ public class TechnicalDetailController {
     Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
     if (studentOpt.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found!");
+    }
+
+    Student student = studentOpt.get();
+    Faculty faculty = student.getFaculty();
+    if (faculty == null) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No faculty assigned to student!");
     }
 
     // Retrieve event (if exists)
@@ -83,9 +99,29 @@ public class TechnicalDetailController {
     detail.setAchievementDetails(request.getAchievementDetails());
     detail.setOtherDetails(request.getOtherDetails());
 
-    // Save to database
-    technicalDetailRepository.save(detail);
-    return ResponseEntity.ok("Technical Detail added successfully!");
+    TechnicalDetail savedDetail = technicalDetailRepository.save(detail);
+    int entryID = savedDetail.getTechnicalDetailID();
+
+    Optional<Integer> tableIDOpt = Optional.ofNullable(tableDetailsRepository.findByTableName("technical_event_details"))
+    .map(table -> table.getTableID());
+
+    if (tableIDOpt.isEmpty()) {
+    return ResponseEntity.status(500).body("Table entry for technical_details not found.");
+    }
+
+    int tableID = tableIDOpt.get();
+
+    // ✅ Insert request for faculty approval
+    Request newRequest = new Request();
+    newRequest.setStudent(student);
+    newRequest.setFaculty(faculty);
+    newRequest.setTableDetails(tableDetailsRepository.findById(tableID).get());
+    newRequest.setEntryID(entryID);
+    newRequest.setStatus("PENDING");
+
+    requestRepository.save(newRequest);
+
+    return ResponseEntity.ok("Technical Detail added & Request sent for approval!");
 }
 
 

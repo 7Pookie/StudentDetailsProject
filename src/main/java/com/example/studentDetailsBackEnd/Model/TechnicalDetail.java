@@ -135,5 +135,7 @@ public class TechnicalDetail {
         this.otherDetails = otherDetails;
     }
 
-    // Getters & Setters
+    public int getTechnicalDetailID() {
+        return id;
+    }
 }
