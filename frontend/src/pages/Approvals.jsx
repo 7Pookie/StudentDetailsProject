@@ -1,14 +1,16 @@
 import React from 'react'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import Sidebar from "../components/Sidebar"
+import Sidebar1 from "../components/Sidebar1"
 import UpdateDetailCard from '../components/UpdateDetailCard'
 import { Link } from 'react-router-dom'
 
 const Approvals = () => {
     return (
         <div className="grid grid-cols-6 mt-20">
-          <div></div>
+          <div>
+            <Sidebar1 />
+          </div>
           <div className="col-span-5 p-5">
             <div>
               <h1 className='text-2xl font-bold'>Approvals</h1>

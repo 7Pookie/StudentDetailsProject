@@ -24,6 +24,9 @@ import StudentLogin from './pages/login/student/StudentLogin.jsx';
 import FacultyLogin from './pages/login/faculty/FacultyLogin.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
 import ApprovePage from './pages/ApprovePage.jsx';
+import ViewRequest from './pages/ViewRequest.jsx';
+import UpdateRequest from './pages/UpdateRequest.jsx';
+
 function App() {
   return (
     <Router>
@@ -50,6 +53,8 @@ function App() {
         <Route path='/faculty/login' element={<FacultyLogin/>}/>
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path='/faculty/approve/:requestID' element={<ApprovePage />} />
+        <Route path='/student/request/:requestID' element={<ViewRequest />} />
+        <Route path='/student/request/:requestID/update' element={<UpdateRequest />} />
         <Route />
       </Routes>
     </Router>

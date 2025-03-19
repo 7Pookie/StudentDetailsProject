@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Input1 from "../components/Input1";
 import Button from "../components/Button";
-import Sidebar from "../components/Sidebar";
+import Sidebar1 from "../components/Sidebar1";
 
 const ApprovePage = () => {
     const { requestID } = useParams(); 
@@ -39,15 +39,16 @@ const ApprovePage = () => {
 
     return (
         <div className="grid grid-cols-6 mt-10">
-            <Sidebar />
-            <div className="col-span-5 p-5">
-                <h2 className="text-2xl font-bold mb-4">Approval Form</h2>
+            <div className="fixed pt-16">
+            <Sidebar1 />
+            </div>
+            <div className="col-start-2 col-span-5 p-5">
+                <h2 className="text-2xl font-bold mt-6 mb-10">Approval Form</h2>
                 <form className="space-y-4">
                     {Object.entries(formData).map(([key, value]) => (
                         <Input1 key={key} labelText={key} value={value} readOnly />
                     ))}
 
-                    {/* Faculty Remark Input */}
                     <Input1 labelText="Faculty Remark" value={remark} onChange={(e) => setRemark(e.target.value)} />
 
                     {/* Approve & Reject Buttons */}

@@ -1,53 +1,93 @@
-import React from 'react'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import Sidebar from '../components/Sidebar'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import Sidebar from "../components/Sidebar";
 
 const ViewDetails = () => {
-    return (
-        <div className="grid grid-cols-6 mt-20">
-        <div>
-          <Sidebar />
-        </div>
-        <div className="col-span-5 p-5">
-          <div>
-            <h1 className='text-2xl font-bold'>Details Page</h1>
-            <div className=" mt-5">
-              <div className='flex justify-between'>
-                  <Input labelText={"Name"} placeholderText={"Kranti Sambhav"}/>
-                  <Input labelText={"Roll Number"} placeholderText={"B220970CS"}/>
-              </div>
-              <div>
-                  <Input labelText={"Event Name"} placeholderText={"Tathva"} />
-              </div>
-              <div>
-                  <Input labelText={"Event Category"} placeholderText={"Dance"} />
-              </div>
-              <div className='flex justify-between'>
-                  <Input labelText={"Date"} placeholderText={"29/01/2020"}/>
-                  <Input labelText={"Role"} placeholderText={"Financial Manager"}/>
-              </div>
-              <div>
-                  <Input labelText={"Achievement"} placeholderText={"First Position"}/>
-              </div>
-              <div>
-                <Input labelText={"Achievement Details"} placeholderText={""}/>
-              </div>
-              <div className='flex justify-between'>
-                  <Input labelText={"Other Details"} placeholderText={""}/>
-                  <Input labelText={"Participation Certificate"} placeholderText={"Uploaded File"}/>
-              </div>
-              <div>
-                <Input labelText={"Remark By Faculty Advisor"} placeholderText={""}/>
-              </div>
-            </div>
-            <div className='flex pr-2 mt-6 ml-2'>
-            <Button buttonText={"Update and Resubmit "} />
-            </div>
-          </div>
-        </div>
-      </div>
-      )
-}
+    const [requests, setRequests] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [studentID, setStudentID] = useState(null);
 
-export default ViewDetails
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/students/me", { withCredentials: true })
+            .then(response => {
+              console.log("🔹 Student ID Response:", response.data);
+                if (response.data.studentID) {
+                    setStudentID(response.data.studentID);
+                } else {
+                    console.error("❌ Student ID not found!");
+                }
+            })
+            .catch(error => console.error("❌ Failed to fetch student ID:", error));
+    }, []);
+
+    useEffect(() => {
+        if (!studentID) return;
+
+        axios.get(`http://localhost:8080/api/students/requests/${studentID}`)
+            .then(response => {
+              console.log("🔹 Requests Response:", response.data);
+              if (Array.isArray(response.data)) {
+                setRequests({ "General": response.data });
+            } else {
+                setRequests(response.data);
+            }
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("❌ Error fetching requests:", error);
+                setError("Error fetching requests. Please try again later.");
+                setLoading(false);
+            });
+    }, [studentID]);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+
+    return (
+        <div className="grid grid-cols-6 mt-10">
+            <div className="fixed pt-16">
+            <Sidebar />
+            </div>
+            <div className="col-start-2 col-span-5 p-5">
+                <h2 className="text-2xl font-bold mb-4 pt-14">All Requests</h2>
+
+                {Object.keys(requests).map((category) => (
+                    requests[category].length > 0 && (
+                        <div key={category} className="mb-6">
+                            <table className="min-w-full bg-white border border-gray-300">
+                                <thead>
+                                    <tr className="bg-red-300">
+                                        <th className="border px-4 py-2">Event Name</th>
+                                        <th className="border px-4 py-2">Role</th>
+                                        <th className="border px-4 py-2">Status</th>
+                                        <th className="border px-4 py-2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {requests[category].map((req, index) => (
+                                        <tr key={index} className="border">
+                                            <td className="border px-4 py-2 text-center">{req.eventName}</td>
+                                            <td className="border px-4 py-2 text-center">{req.role}</td>
+                                            <td className={`border px-4 py-2 text-center font-bold ${req.status === "REJECTED"?"text-red-600": req.status === "APPROVED"?"text-green-600": "text-blue-600"}`}>
+                                                {req.status}
+                                            </td>
+                                            <td className="border px-4 py-2 text-center">
+                                                <Link to={`/student/request/${req.requestID}`} className="text-blue-500 underline">
+                                                    View Details
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default ViewDetails;

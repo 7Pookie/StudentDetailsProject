@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
-import Sidebar from '../components/Sidebar'
+import Sidebar1 from '../components/Sidebar1'
 import axios from 'axios';
-import './pending-approvals.css';
 import { Link } from 'react-router-dom';
 
 const PendingApprovals = () => {
@@ -42,11 +41,15 @@ const PendingApprovals = () => {
     if (error) return <p className="text-red-500">{error}</p>;
     
     return (
-      <div className="p-5">
-      <h2 className="text-2xl font-bold mb-4">Pending Requests</h2>
+      <div className="grid grid-cols-6 mt-10">
+          <div className="pt-16">
+                <Sidebar1 />
+          </div>
+          <div className="col-start-2 col-span-5 p-5">
+      <h2 className="text-2xl font-bold mb-4 pt-14">Pending Requests</h2>
       <table className="min-w-full bg-white border border-gray-300">
           <thead>
-              <tr className="bg-gray-200">
+              <tr className="bg-green-300">
                   <th className="border px-4 py-2">Student Name</th>
                   <th className="border px-4 py-2">Roll No</th>
                   <th className="border px-4 py-2">Event Type</th>
@@ -56,18 +59,19 @@ const PendingApprovals = () => {
           <tbody>
   {requests.map((req, index) => (
     <tr key={index} className="border">
-      <td className="border px-4 py-2">
+      <td className="border px-4 py-2 text-center">
         <Link to={`/faculty/approve/${req.requestID}`} className="text-blue-500 underline">
           {req.studentName}
         </Link>
       </td>
-      <td className="border px-4 py-2">{req.studentRollNo}</td>
-      <td className="border px-4 py-2">{req.tableName}</td>
-      <td className="border px-4 py-2">{req.status}</td>
+      <td className="border px-4 py-2 text-center">{req.studentRollNo}</td>
+      <td className="border px-4 py-2 text-center">{req.tableName}</td>
+      <td className="border px-4 py-2 text-center">{req.status}</td>
     </tr>
   ))}
 </tbody>
       </table>
+          </div>
   </div>
           )
 }

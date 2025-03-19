@@ -134,16 +134,16 @@ const UpdateTechDetails = () => {
 
     return (
         <div className="grid grid-cols-6 mt-20">
-            <div>
+            <div className="pt-16">
                 <Sidebar />
             </div>
-            <div className="col-span-5 p-5">
-                <h1 className="text-2xl font-bold">Technical Events Details</h1>
+            <div className="col-span-5 bg-white py-10 px-20 rounded-lg shadow-lg">
+                <h1 className="text-3xl font-bold text-gray-700 mb-8">Technical Events Details</h1>
                 <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                     {/* ✅ Event Name Selection */}
                     <div>
-                        <label className="font-semibold">Event Name *</label>
-                        <select name="eventID" value={formData.eventID} onChange={handleChange} required>
+                        <label className="block text-lg font-bold text-gray-700">Event Name *</label>
+                        <select name="eventID" value={formData.eventID} onChange={handleChange} required className="w-1/2 px-4 py-2 mt-2 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select Event Name</option>
                             {eventNames.map(event => (
                                 <option key={event.eventID} value={event.eventID}>
@@ -152,28 +152,25 @@ const UpdateTechDetails = () => {
                             ))}
                         </select>
 
-                        {/* ✅ New Event Name Input */}
                         <Input1
                             labelText="Or enter new event name"
                             name="customEventName"
                             value={formData.customEventName}
                             onChange={handleChange}
-                            disabled={!!formData.eventID} // ✅ Disable if dropdown is selected
+                            disabled={!!formData.eventID} 
                         />
 
-                        {/* ✅ Add New Event Button */}
                         <Button
                             buttonText="Add New Event"
                             onClick={handleAddNewEvent}
-                            type="button" // Explicitly set type to "button"
+                            type="button" 
                             disabled={loading}
                         />
                     </div>
 
-                    {/* ✅ Event Category Selection */}
                     <div>
-                        <label className="font-semibold">Event Category *</label>
-                        <select name="eventCategoryID" value={formData.eventCategoryID} onChange={handleChange} required>
+                        <label className="block text-lg font-bold text-gray-700 mt-10">Event Category *</label>
+                        <select name="eventCategoryID" value={formData.eventCategoryID} onChange={handleChange} required className="w-1/2 px-4 py-2 mt-2 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select Category</option>
                             {eventCategories.map(category => (
                                 <option key={category.eventCategoryID} value={category.eventCategoryID}>
@@ -201,10 +198,10 @@ const UpdateTechDetails = () => {
                     </div>
 
                     {/* ✅ Other Form Fields */}
-                    <CustomDatePicker labelText="Event Date *" selectedDate={formData.eventDate} onChange={handleDateChange} required/>
+                    <CustomDatePicker labelText="Event Date *" selectedDate={formData.eventDate} onChange={handleDateChange} required className="mt-6"/>
                     <Input1 labelText="Role *" name="role" value={formData.role} onChange={handleChange} required/>
-                    <label>Achievement:</label>
-                    <select name="achievement" value={formData.achievement} onChange={handleChange} >
+                    <label className="block text-lg font-bold text-gray-700 mt-10">Achievement:</label>
+                    <select name="achievement" value={formData.achievement} onChange={handleChange} className="w-1/2 px-4 py-2 mt-2 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Select Achievement</option>
                         <option value="1st">1st Place</option>
                         <option value="2nd">2nd Place</option>
