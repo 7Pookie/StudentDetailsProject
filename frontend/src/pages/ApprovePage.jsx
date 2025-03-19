@@ -29,7 +29,7 @@ const ApprovePage = () => {
         axios.put(`http://localhost:8080/api/faculty/request/${requestID}`, { status, remark })
             .then(() => {
                 alert(`✅ Request ${status} successfully!`);
-                window.history.back(); // Redirect to previous page
+                window.history.back();
             })
             .catch(error => alert("❌ Failed to update status:", error));
     };
@@ -51,7 +51,6 @@ const ApprovePage = () => {
 
                     <Input1 labelText="Faculty Remark" value={remark} onChange={(e) => setRemark(e.target.value)} />
 
-                    {/* Approve & Reject Buttons */}
                     <div className="flex space-x-4 mt-4">
                         <Button buttonText="Approve" onClick={() => handleApproval("APPROVED")} />
                         <Button buttonText="Reject" onClick={() => handleApproval("REJECTED")} />
