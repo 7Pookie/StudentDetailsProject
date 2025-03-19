@@ -13,4 +13,6 @@ public interface RequestRepository extends JpaRepository<Request, Integer> {
     List<Request> findByFacultyFacultyIDAndStatus(int facultyID, String status);
 
     Optional<Request> findById(int requestID);
+
+    List<Request> findByStudentStudentID(int studentID);
 }

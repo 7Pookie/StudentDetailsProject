@@ -38,7 +38,7 @@ public class FacultyController {
     private TableDetailsRepository tableDetailsRepository;
 
     @Autowired
-    private TechnicalDetailRepository TechnicalDetailRepository;
+    private TechnicalDetailRepository technicalDetailRepository;
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentFaculty(@AuthenticationPrincipal OAuth2User principal, HttpSession session) {
@@ -84,9 +84,8 @@ public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int r
 
     Request request = requestOpt.get();
     Map<String, Object> requestData = new HashMap<>();
-    requestData.put("studentID", request.getStudent().getStudentID());
-    requestData.put("studentName", request.getStudent().getName());
-    requestData.put("eventName", request.getTableDetails().getTableName());
+    requestData.put("Student Name", request.getStudent().getName());
+    requestData.put("Event", request.getTableDetails().getTableName());
     requestData.put("status", request.getStatus());
 
     // ✅ Fetch Additional Details Based on tableID & entryID
@@ -94,11 +93,15 @@ public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int r
     int entryID = request.getEntryID();
 
     if (tableID == 1) {  
-        Optional<TechnicalDetail> techDetails = TechnicalDetailRepository.findById(entryID);
+        Optional<TechnicalDetail> techDetails = technicalDetailRepository.findById(entryID);
         techDetails.ifPresent(details -> {
-            requestData.put("role", details.getRole());
-            requestData.put("achievement", details.getAchievement());
-            requestData.put("achievementDetails", details.getAchievementDetails());
+            requestData.put("Event Name", details.getEvent().getName());
+            requestData.put("Event Category", details.getEventCategory().getEventCategoryName());
+            requestData.put("Event Date", details.getEventDate());
+            requestData.put("Role", details.getRole());
+            requestData.put("Achievement", details.getAchievement());
+            requestData.put("AchievementDetails", details.getAchievementDetails());
+            requestData.put("Other Details", details.getOtherDetails());
         });
     } 
     return ResponseEntity.ok(requestData);
@@ -111,9 +114,66 @@ public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int r
         if (requestOpt.isEmpty()) return ResponseEntity.status(404).body("Request not found");
 
         Request request = requestOpt.get();
-        request.setStatus(payload.get("status"));
+        String newStatus = payload.get("status");
+        String facultyRemark = payload.get("remark");
+
+        request.setStatus(newStatus);
         requestRepository.save(request);
 
-        return ResponseEntity.ok("Request " + payload.get("status"));
+        int tableID = request.getTableDetails().getTableID();
+        int entryID = request.getEntryID();
+
+        if (tableID == 1) {  
+            Optional<TechnicalDetail> techDetailOpt = technicalDetailRepository.findById(entryID);
+            techDetailOpt.ifPresent(techDetail -> {
+                techDetail.setStatus(newStatus);
+                techDetail.setRemark(facultyRemark);
+                technicalDetailRepository.save(techDetail);
+            });
+        }
+
+        return ResponseEntity.ok("Request " + newStatus + " with remarks saved.");
     }
+
+    @GetMapping("/approved-requests/{facultyID}")
+    public ResponseEntity<?> getApprovedRequests(@PathVariable int facultyID) {
+    List<Request> approvedRequests = requestRepository.findByFacultyFacultyIDAndStatus(facultyID, "APPROVED");
+
+    return ResponseEntity.ok(approvedRequests.stream().map(req -> Map.of(
+            "requestID", req.getRequestID(),
+            "studentName", req.getStudent().getName(),
+            "studentRollNo", req.getStudent().getRollNo(),
+            "tableName", req.getTableDetails().getTableName(),
+            "status", req.getStatus()
+    )));
+}
+
+@GetMapping("/rejected-requests/{facultyID}")
+public ResponseEntity<?> getRejectedRequests(@PathVariable int facultyID) {
+    List<Request> rejectedRequests = requestRepository.findByFacultyFacultyIDAndStatus(facultyID, "REJECTED");
+
+    return ResponseEntity.ok(rejectedRequests.stream().map(req -> {
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("requestID", req.getRequestID());
+        requestData.put("studentName", req.getStudent().getName());
+        requestData.put("studentRollNo", req.getStudent().getRollNo());
+        requestData.put("tableName", req.getTableDetails().getTableName());
+        requestData.put("status", req.getStatus());
+
+        int tableID = req.getTableDetails().getTableID();
+        int entryID = req.getEntryID();
+
+        String facultyRemark = "No Remark";  
+
+        if (tableID == 1) {  
+            Optional<TechnicalDetail> techDetails = technicalDetailRepository.findById(entryID);
+            facultyRemark = techDetails.map(TechnicalDetail::getRemark).orElse("No Remark");
+        }
+
+        requestData.put("remark", facultyRemark);
+        return requestData;
+    }).toList());
+}
+
+
 }

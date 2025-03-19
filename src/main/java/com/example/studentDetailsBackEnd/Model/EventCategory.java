@@ -14,7 +14,10 @@ public class EventCategory {
     @Column(name = "event_category_name",nullable = false, unique = true)
     private String eventCategoryName;
 
-    public EventCategory() {}
+
+    public EventCategory() {
+        
+    }
 
     public EventCategory(String category) {
         this.eventCategoryName = category;
@@ -28,5 +31,4 @@ public class EventCategory {
        return eventCategoryID;
     }
 
-    // Getters & Setters
 }

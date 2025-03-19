@@ -28,5 +28,7 @@ public class TechnicalEvents {
         return eventID;
     }
 
-    // Getters & Setters
+    public void setName(String name) {
+        this.name = name;
+    }
 }

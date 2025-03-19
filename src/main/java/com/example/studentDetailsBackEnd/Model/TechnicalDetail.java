@@ -42,6 +42,9 @@ public class TechnicalDetail {
     @Column(nullable = false)
     private String status = "PENDING";
 
+    @Column(nullable = true)
+    private String remark = "";
+
     public TechnicalDetail() {}
 
     public TechnicalDetail(Student student,TechnicalEvents technicalEvent, EventCategory eventCategory, LocalDate eventDate, String role, String achievement, String achievementDetails, String otherDetails) {
@@ -137,5 +140,13 @@ public class TechnicalDetail {
 
     public int getTechnicalDetailID() {
         return id;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getRemark() {
+        return remark;
     }
 }
