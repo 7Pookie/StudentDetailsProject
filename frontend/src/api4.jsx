@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080/api/technical-details";  // Adjust your backend URL
+const API_BASE_URL = "http://localhost:8080/api/professional-society-details";  // Adjust your backend URL
 
 // Fetch all event names
 export const fetchEventNames = async () => {
@@ -15,7 +15,7 @@ export const fetchEventCategories = async () => {
 };
 
 // Submit technical details
-export const addTechnicalDetail = async (technicalDetail) => {
-    const response = await axios.post(`${API_BASE_URL}/add`, technicalDetail);
+export const addSportDetail = async (sportDetail) => {
+    const response = await axios.post(`${API_BASE_URL}/add`, sportDetail);
     return response.data;
 };

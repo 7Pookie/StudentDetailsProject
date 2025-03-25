@@ -3,7 +3,7 @@ import axios from "axios";
 import Input1 from "../components/Input1";
 import Button from "../components/Button";
 import Sidebar from "../components/Sidebar";
-import { fetchEventNames, fetchEventCategories, addTechnicalDetail, addCulturalDetail, addSportDetail } from "../api1";
+import { fetchEventNames, fetchEventCategories, addSportDetail} from "../api3";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomDatePicker from "./CustomDatePicker";
 
