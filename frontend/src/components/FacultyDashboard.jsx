@@ -13,7 +13,7 @@ const FacultyDashboard = () => {
         <h1 className='font-semibold'>joe_b29430@nitc.ac.in</h1>   
     </div>    
     <div className=' flex justify-between mt-10 gap-10'>
-    <Link to="/Approvals" style={{ textDecoration: "none" }}>
+    <Link to="/faculty/approvals" style={{ textDecoration: "none" }}>
       <Button buttonText='Approvals'/>
       </Link>
     </div>   

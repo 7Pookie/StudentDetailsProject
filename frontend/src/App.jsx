@@ -26,6 +26,9 @@ import AdminDashboard from './components/AdminDashboard.jsx';
 import ApprovePage from './pages/ApprovePage.jsx';
 import ViewRequest from './pages/ViewRequest.jsx';
 import UpdateRequest from './pages/UpdateRequest.jsx';
+import UpadateClubDetails from './pages/UpdateClubDetails.jsx'
+import FacultyDashboard from "./components/FacultyDashboard.jsx"
+import HomeAdmin from './pages/HomeAdmin/HomeAdmin.jsx';
 
 function App() {
   return (
@@ -43,15 +46,18 @@ function App() {
         <Route path='/student/update-details/update-professional-society-details' element={<UpdateProfessionalSocietyDetails />} />
         <Route path='/student/update-details/update-publications-details' element={<UpdatePublicationsDetails />} />
         <Route path='/student/update-details/update-placement-details' element={<UpdatePlacementDetails />} />
+        <Route path='/student/update-details/update-club-details' element={<UpadateClubDetails />} />
         <Route path='/admin/add-announcements' element={<AddAnnouncements />} />
         <Route path='/faculty/approvals/pending-approvals' element={<PendingApprovals />} />
         <Route path='/faculty/approvals/rejected-approvals' element={<RejectedApprovals />} />
         <Route path='/faculty/approvals/previous-approvals' element={<PreviousApprovals />} />
         <Route path='/admin/login' element={<AdminLogin />} />
         <Route path='/student/dashboard' element={<Home />} />
+        <Route path='/admin/dashboard' element={<HomeAdmin />} />
         <Route path='/student/login' element={<StudentLogin />} />
         <Route path='/faculty/login' element={<FacultyLogin/>}/>
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
+        <Route path='/faculty/dashboard' element={<FacultyDashboard />} />
         <Route path='/faculty/approve/:requestID' element={<ApprovePage />} />
         <Route path='/student/request/:requestID' element={<ViewRequest />} />
         <Route path='/student/request/:requestID/update' element={<UpdateRequest />} />
