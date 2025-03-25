@@ -29,7 +29,6 @@ public class RequestService {
     @Autowired
     private TableDetailsRepository tableDetailsRepository;
 
-    // ✅ Method to create a new request
     public void createRequest(int studentID, int tableID, int entryID) {
         Optional<Student> studentOpt = studentRepository.findById(studentID);
 
@@ -38,7 +37,7 @@ public class RequestService {
         }
 
         Student student = studentOpt.get();
-        Faculty faculty = student.getFaculty(); // Get the faculty associated with the student
+        Faculty faculty = student.getFaculty(); 
 
         if (faculty == null) {
             throw new RuntimeException("No faculty advisor assigned to this student");

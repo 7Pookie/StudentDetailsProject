@@ -32,7 +32,6 @@ public class RequestController {
     @Autowired
     private TableDetailsRepository tableDetailsRepository;
 
-    // ✅ Submit Request (Student Submits an Entry for Faculty Approval)
     @PostMapping("/submit")
     public ResponseEntity<?> submitRequest(@RequestBody Request requestData) {
         Optional<Student> studentOpt = studentRepository.findById(requestData.getStudent().getStudentID());
@@ -53,7 +52,6 @@ public class RequestController {
         return ResponseEntity.ok("✅ Request submitted successfully!");
     }
 
-    // ✅ Fetch Requests for a Faculty
     @GetMapping("/faculty/{facultyID}")
     public ResponseEntity<List<Request>> getRequestsForFaculty(@PathVariable int facultyID) {
         List<Request> requests = requestService.getRequestsForFaculty(facultyID);

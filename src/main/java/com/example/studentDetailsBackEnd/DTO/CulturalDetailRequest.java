@@ -2,7 +2,7 @@ package com.example.studentDetailsBackEnd.DTO;
 
 import java.time.LocalDate;
 
-public class TechnicalDetailRequest {
+public class CulturalDetailRequest {
     private int studentID;
     private int eventID;
     private int eventCategoryID;

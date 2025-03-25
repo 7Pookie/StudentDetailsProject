@@ -2,37 +2,39 @@ package com.example.studentDetailsBackEnd.DTO;
 
 import java.time.LocalDate;
 
-public class TechnicalDetailRequest {
-    private int studentID;
-    private int eventID;
-    private int eventCategoryID;
+public class SportDetailRequest {
+    private Integer studentID;
+    private Integer eventID;
+    private Integer eventCategoryID;
     private LocalDate eventDate;
     private String role;
     private String achievement;
     private String achievementDetails;
     private String otherDetails;
 
-    public int getStudentID() {
+    public SportDetailRequest() {}
+
+    public Integer getStudentID() {
         return studentID;
     }
 
-    public void setStudentID(int studentID) {
+    public void setStudentID(Integer studentID) {
         this.studentID = studentID;
     }
 
-    public int getEventID() {
+    public Integer getEventID() {
         return eventID;
     }
 
-    public void setEventID(int eventID) {
+    public void setEventID(Integer eventID) {
         this.eventID = eventID;
     }
 
-    public int getEventCategoryID() {
+    public Integer getEventCategoryID() {
         return eventCategoryID;
     }
 
-    public void setEventCategoryID(int eventCategoryID) {
+    public void setEventCategoryID(Integer eventCategoryID) {
         this.eventCategoryID = eventCategoryID;
     }
 

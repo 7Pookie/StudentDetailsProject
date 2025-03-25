@@ -2,6 +2,11 @@ package com.example.studentDetailsBackEnd.Controller;
 
 import com.example.studentDetailsBackEnd.Model.TechnicalEvents;
 import com.example.studentDetailsBackEnd.repository.TechnicalEventsRepository;
+import com.example.studentDetailsBackEnd.Model.CulturalEvents;
+import com.example.studentDetailsBackEnd.repository.CulturalEventsRepository;
+import com.example.studentDetailsBackEnd.Model.SportEvents;
+import com.example.studentDetailsBackEnd.repository.SportEventsRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +17,29 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
 
     @Autowired
-    private TechnicalEventsRepository technicalEventsRepository; // ✅ Inject the repository
+    private TechnicalEventsRepository technicalEventsRepository;
+    
+    @Autowired
+    private CulturalEventsRepository culturalEventsRepository;
 
-    // ✅ API to add a new event
-    @PostMapping("/add")
+    @Autowired
+    private SportEventsRepository sportEventsRepository;
+
+    @PostMapping("/technical/add")
     public ResponseEntity<TechnicalEvents> addEvent(@RequestBody TechnicalEvents event) {
         TechnicalEvents savedEvent = technicalEventsRepository.save(event);
+        return ResponseEntity.ok(savedEvent);
+    }
+
+    @PostMapping("/cultural/add")
+    public ResponseEntity<CulturalEvents> addEvent(@RequestBody CulturalEvents event) {
+        CulturalEvents savedEvent = culturalEventsRepository.save(event);
+        return ResponseEntity.ok(savedEvent);
+    }
+
+    @PostMapping("/sport/add")
+    public ResponseEntity<SportEvents> addEvent(@RequestBody SportEvents event) {
+        SportEvents savedEvent = sportEventsRepository.save(event);
         return ResponseEntity.ok(savedEvent);
     }
 }

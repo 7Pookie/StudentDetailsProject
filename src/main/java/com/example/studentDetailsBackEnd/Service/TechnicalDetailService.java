@@ -24,25 +24,21 @@ public class TechnicalDetailService {
 
     public TechnicalDetail addTechnicalDetail(int studentId, String eventName, String eventCategory, LocalDate eventDate, String role, String achievement, String achievementDetails, String otherDetails) {
         System.out.println("Received studentId: " + studentId);
-        // Fetch Student (Foreign Key)
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found!"));
     
-        // Fetch or Create Technical Event
         TechnicalEvents event = technicalEventsRepository.findByName(eventName);
         if (event == null) {
             event = technicalEventsRepository.save(new TechnicalEvents(eventName));
         }
     
-        // Fetch or Create Event Category
         EventCategory category = eventCategoryRepository.findByCategory(eventCategory);
         if (category == null) {
             category = eventCategoryRepository.save(new EventCategory(eventCategory));
         }
     
-        // Save only Foreign Keys in `technical_event_details` table
         TechnicalDetail detail = new TechnicalDetail(student, event, category, eventDate, role, achievement, achievementDetails, otherDetails);
-        detail.setStatus("PENDING");  // ✅ Explicitly setting the status before saving
+        detail.setStatus("PENDING");  
         return technicalDetailRepository.save(detail);
     }
     
@@ -51,7 +47,6 @@ public class TechnicalDetailService {
         return technicalDetailRepository.findAll();
     }
 
-    // ✅ Method to update status (e.g., "APPROVED" / "REJECTED")
     public TechnicalDetail updateStatus(int id, String status) {
         TechnicalDetail detail = technicalDetailRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Technical Detail not found!"));

@@ -4,7 +4,17 @@ import com.example.studentDetailsBackEnd.Model.Request;
 import com.example.studentDetailsBackEnd.Model.TechnicalDetail;
 import com.example.studentDetailsBackEnd.repository.TechnicalDetailRepository;
 import com.example.studentDetailsBackEnd.repository.RequestRepository;
-import com.example.studentDetailsBackEnd.repository.TechnicalDetailRepository;
+import com.example.studentDetailsBackEnd.repository.CulturalDetailRepository;
+import com.example.studentDetailsBackEnd.repository.ProfessionalSocietyDetailRepository;
+
+import com.example.studentDetailsBackEnd.repository.SportDetailRepository;
+import com.example.studentDetailsBackEnd.repository.PlacementDetailRepository;
+import com.example.studentDetailsBackEnd.Model.PlacementDetail;
+import com.example.studentDetailsBackEnd.Model.ProfessionalSocietyDetail;
+
+import com.example.studentDetailsBackEnd.Model.CulturalDetail;
+import com.example.studentDetailsBackEnd.Model.SportDetail;
+
 import com.example.studentDetailsBackEnd.repository.TableDetailsRepository;
 import com.example.studentDetailsBackEnd.repository.FacultyRepository; 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +49,19 @@ public class FacultyController {
 
     @Autowired
     private TechnicalDetailRepository technicalDetailRepository;
+
+    @Autowired
+    private CulturalDetailRepository culturalDetailRepository;
+
+    @Autowired
+    private SportDetailRepository sportDetailRepository;
+
+    @Autowired
+    private PlacementDetailRepository placementDetailRepository;
+
+    @Autowired
+    private ProfessionalSocietyDetailRepository professionalSocietyDetailRepository;
+
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentFaculty(@AuthenticationPrincipal OAuth2User principal, HttpSession session) {
@@ -76,7 +99,7 @@ public class FacultyController {
     }
 
     @GetMapping("/request/{requestID}")
-public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int requestID) {
+    public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int requestID) {
     Optional<Request> requestOpt = requestRepository.findById(requestID);
     if (requestOpt.isEmpty()) {
         return ResponseEntity.status(404).body(Map.of("error", "Request not found"));
@@ -104,6 +127,55 @@ public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int r
             requestData.put("Other Details", details.getOtherDetails());
         });
     } 
+
+    else if(tableID == 2) {
+        Optional<CulturalDetail> culturalDetails = culturalDetailRepository.findById(entryID);
+        culturalDetails.ifPresent(details -> {
+            requestData.put("Event Name", details.getEvent().getName());
+            requestData.put("Event Category", details.getEventCategory().getEventCategoryName());
+            requestData.put("Event Date", details.getEventDate());
+            requestData.put("Role", details.getRole());
+            requestData.put("Achievement", details.getAchievement());
+            requestData.put("AchievementDetails", details.getAchievementDetails());
+            requestData.put("Other Details", details.getOtherDetails());
+        });
+    }
+
+    else if(tableID == 4){
+        Optional<PlacementDetail> placementDetails = placementDetailRepository.findById(entryID);
+        placementDetails.ifPresent(details -> {
+            requestData.put("Placement Type", details.getPlacementType());
+            requestData.put("Company", details.getCompany().getCompanyName());
+            requestData.put("Start Date", details.getStartDate());
+            requestData.put("End Date", details.getEndDate());
+            requestData.put("Role", details.getRole());
+        });
+    }
+
+    else if(tableID == 5){
+        Optional<ProfessionalSocietyDetail> societyDetails = professionalSocietyDetailRepository.findById(entryID);
+        societyDetails.ifPresent(details -> {
+            requestData.put("Society Name", details.getSociety().getSocietyName());
+            requestData.put("Field", details.getField().getFieldName());
+            requestData.put("Date Joined", details.getDateJoined());
+            requestData.put("Role", details.getRole());
+            requestData.put("Achievement",details.getAchievementDetails());
+        });
+    }
+    
+
+    else if(tableID == 6){
+        Optional<SportDetail> sportDetails = sportDetailRepository.findById(entryID);
+        sportDetails.ifPresent(details -> {
+            requestData.put("Event Name", details.getEvent().getSportEventName());
+            requestData.put("Event Category", details.getEventCategory().getSportEventCategoryName());
+            requestData.put("Event Date", details.getEventDate());
+            requestData.put("Role", details.getRole());
+            requestData.put("Achievement", details.getAchievement());
+            requestData.put("AchievementDetails", details.getAchievementDetails());
+            requestData.put("Other Details", details.getOtherDetails());
+        });
+    }
     return ResponseEntity.ok(requestData);
 }
 
@@ -129,6 +201,42 @@ public ResponseEntity<Map<String, Object>> getRequestDetails(@PathVariable int r
                 techDetail.setStatus(newStatus);
                 techDetail.setRemark(facultyRemark);
                 technicalDetailRepository.save(techDetail);
+            });
+        }
+
+        else if(tableID==2) {
+            Optional<CulturalDetail> culturalDetailOpt = culturalDetailRepository.findById(entryID);
+            culturalDetailOpt.ifPresent(culturalDetail -> {
+                culturalDetail.setStatus(newStatus);
+                culturalDetail.setRemark(facultyRemark);
+                culturalDetailRepository.save(culturalDetail);
+            });
+        }
+
+        else if(tableID==4) {
+            Optional<PlacementDetail> placementDetailOpt = placementDetailRepository.findById(entryID);
+            placementDetailOpt.ifPresent(placementDetail -> {
+                placementDetail.setStatus(newStatus);
+                placementDetail.setRemark(facultyRemark);
+                placementDetailRepository.save(placementDetail);
+            });
+        }
+
+        else if(tableID==5) {
+            Optional<ProfessionalSocietyDetail> societyOpt = professionalSocietyDetailRepository.findById(entryID);
+            societyOpt.ifPresent(societyDetail -> {
+                societyDetail.setStatus(newStatus);
+                societyDetail.setRemark(facultyRemark);
+                professionalSocietyDetailRepository.save(societyDetail);
+            });
+        }
+
+        else if(tableID==6) {
+            Optional<SportDetail> sportDetailOpt = sportDetailRepository.findById(entryID);
+            sportDetailOpt.ifPresent(sportDetail -> {
+                sportDetail.setStatus(newStatus);
+                sportDetail.setRemark(facultyRemark);
+                sportDetailRepository.save(sportDetail);
             });
         }
 
@@ -168,6 +276,26 @@ public ResponseEntity<?> getRejectedRequests(@PathVariable int facultyID) {
         if (tableID == 1) {  
             Optional<TechnicalDetail> techDetails = technicalDetailRepository.findById(entryID);
             facultyRemark = techDetails.map(TechnicalDetail::getRemark).orElse("No Remark");
+        }
+        else if(tableID==2)
+        {
+            Optional<CulturalDetail> culturalDetails = culturalDetailRepository.findById(entryID);
+            facultyRemark = culturalDetails.map(CulturalDetail::getRemark).orElse("No Remark");
+        }
+        else if(tableID==4)
+        {
+            Optional<PlacementDetail> placementDetails = placementDetailRepository.findById(entryID);
+            facultyRemark = placementDetails.map(PlacementDetail::getRemark).orElse("No Remark");
+        }
+        else if(tableID==5)
+        {
+            Optional<ProfessionalSocietyDetail> societyDetails = professionalSocietyDetailRepository.findById(entryID);
+            facultyRemark = societyDetails.map(ProfessionalSocietyDetail::getRemark).orElse("No Remark");
+        }
+        else if(tableID==6)
+        {
+            Optional<SportDetail> sportDetails = sportDetailRepository.findById(entryID);
+            facultyRemark = sportDetails.map(SportDetail::getRemark).orElse("No Remark");
         }
 
         requestData.put("remark", facultyRemark);
