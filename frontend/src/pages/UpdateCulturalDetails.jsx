@@ -3,7 +3,7 @@ import axios from "axios";
 import Input1 from "../components/Input1";
 import Button from "../components/Button";
 import Sidebar from "../components/Sidebar";
-import { fetchEventNames, fetchEventCategories, addTechnicalDetail } from "../api1";
+import { fetchEventNames, fetchEventCategories, addTechnicalDetail, addCulturalDetail } from "../api1";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomDatePicker from "./CustomDatePicker";
 
@@ -124,7 +124,7 @@ const UpdateTechDetails = () => {
         }
 
         try {
-            await addTechnicalDetail(formData);
+            await addCulturalDetail(formData);
             alert("✅ Technical details added successfully!");
         } catch (error) {
             console.error("❌ Failed to submit details:", error.response?.data || error.message);
