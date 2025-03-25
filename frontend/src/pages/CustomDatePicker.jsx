@@ -10,7 +10,7 @@ const CustomDatePicker = ({ labelText, selectedDate, onChange }) => {
         selected={selectedDate}
         onChange={onChange}
         dateFormat="yyyy-MM-dd" // Customize the date format
-        className="border rounded-lg px-3 py-2 w-full"
+        className="border border-black rounded-lg px-3 py-2 w-full"
         placeholderText="Select a date"
       />
     </div>

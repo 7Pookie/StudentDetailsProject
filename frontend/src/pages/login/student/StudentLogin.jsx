@@ -9,12 +9,8 @@ const StudentLogin = () => {
   return (
     <div className="login-container">
     <div className="login-card">
-        {/* ✅ Logo Placeholder */}
-        <img src={Student} alt="Student Login" className="login-icon" />
-
         <h2 className="login-head">Welcome, Student</h2>
-        <p className="login-subtext">Sign in with Google to continue</p>
-
+        <p className="login-subtext">Sign in with Google</p>
         {/* ✅ Google Login Button */}
         <button onClick={handleLogin} className="google-button">
             <img src={Google} alt="Google" className="google-icon" />

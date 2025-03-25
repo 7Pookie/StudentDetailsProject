@@ -3,7 +3,7 @@ import React from "react";
 const Input1 = ({ labelText, name, value, onChange, disabled }) => {
     return (
         <div className="input-group">
-            <label htmlFor="first_name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-black">{labelText}</label>
+            <label htmlFor="first_name" className="block mb-[0.1rem] text-md font-semibold text-gray-900 dark:text-black">{labelText}</label>
             <input
                 type="text"
                 className="bg-gray-50 border-2 border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 p-2.5 

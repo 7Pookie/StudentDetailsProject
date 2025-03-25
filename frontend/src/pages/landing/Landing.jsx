@@ -32,12 +32,8 @@ const Landing = () => {
         }
     };
 
-
     return(
         <div className="landing-container">
-            
-            <img src={LandingImage} alt="Edutech" className="landing-img" />
-
             <div className="landing-content">
                 <h1 className="edu">Edutech</h1>
                 <div className="card1">
