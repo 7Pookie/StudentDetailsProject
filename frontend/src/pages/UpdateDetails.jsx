@@ -28,7 +28,7 @@ const UpdateDetails = () => {
                     <Link to="/student/update-details/update-publications-details" style={{ textDecoration: "none" }}>
                     <UpdateDetailCard updateCardText={"Publications"} updateCardImage={"https://images.unsplash.com/photo-1504711331083-9c895941bf81?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
                     </Link>
-                    <Link to="/UpdatePlacementDetails" style={{ textDecoration: "none" }}>
+                    <Link to="/student/update-details/update-placement-details" style={{ textDecoration: "none" }}>
                     <UpdateDetailCard updateCardText={"Placements"} updateCardImage={"https://images.unsplash.com/photo-1504711331083-9c895941bf81?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
                     </Link>
                     <UpdateDetailCard updateCardText={"Clubs"} updateCardImage={"https://images.unsplash.com/photo-1556721546-9918b5b57fa2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
