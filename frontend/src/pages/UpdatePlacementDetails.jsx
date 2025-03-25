@@ -135,7 +135,7 @@ const UpdateTechDetails = () => {
     return (
         <div className="grid grid-cols-6 mt-20">
             <div className="pt-16">
-                <Sidebar />
+            <Sidebar button1route={"/student/update-details"} button2route={"/student/view-details"} button3route={"/student/profile/:studentId"} />
             </div>
             <div className="col-span-5 bg-white py-5 px-16 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold text-gray-700 mb-8 underline">Placement / Internships Details</h1>

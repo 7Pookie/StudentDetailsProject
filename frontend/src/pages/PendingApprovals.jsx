@@ -42,8 +42,8 @@ const PendingApprovals = () => {
     
     return (
       <div className="grid grid-cols-6 mt-10">
-          <div className="pt-16">
-                <Sidebar1 />
+            <div>
+            <Sidebar1 button1Route={"/faculty/approvals/pending-approvals"} button2Route={"/faculty/approvals/rejected-approvals"} button3Route={"/faculty/approvals/previous-approvals"}/>
           </div>
           <div className="col-start-2 col-span-5 p-5">
       <h2 className="text-2xl font-bold mb-4 pt-14">Pending Requests</h2>

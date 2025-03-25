@@ -1,18 +1,19 @@
 import {Link} from 'react-router-dom';
 import './home.css';
 import Button from '../../components/Button';
-import StudentDashboard from '../../components/StudentDashboard';
 import Announcements from '../../components/Announcements';
+import AdminDashboard from '../../components/AdminDashboard';
+import FacultyDashboard from '../../components/FacultyDashboard';
 
-const Home = () => {
+const HomeFaculty = () => {
     return (
         <div>
-            <div className="head underline underline-offset-8 flex justify-center mr-20">Student Dashboard</div>
+            <div className="head underline underline-offset-8 mr-20 flex justify-center">Faculty Dashboard</div>
             <div className="page">
                 <div className="card">
                     <div className="info">
                         <div className="text">
-                            <StudentDashboard />
+                            <FacultyDashboard />
                             <Announcements />
                         </div>
                     </div>
@@ -22,4 +23,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default HomeFaculty;

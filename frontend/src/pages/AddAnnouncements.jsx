@@ -23,10 +23,7 @@ const AddAnnouncements = ({token}) => {
   };
     return (
         <div className="grid grid-cols-6 mt-20">
-        <div>
-          <Sidebar />
-        </div>
-        <div className="col-span-5 p-5">
+        <div className="col-span-5 p-5 col-start-2">
           <div>
             <h1 className='text-2xl font-bold'>Announcements</h1>
             <div className="formdata">

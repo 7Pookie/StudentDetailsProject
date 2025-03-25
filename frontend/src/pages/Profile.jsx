@@ -47,7 +47,7 @@ const Profile = () => {
     return (
         <div className="grid grid-cols-6 mt-20">
             <div>
-                <Sidebar />
+            <Sidebar button1route={"/student/update-details"} button2route={"/student/view-details"} button3route={"/student/profile/:studentId"} />
             </div>
             <div className="col-span-5 p-5">
                 <h1 className="text-2xl font-bold">Profile</h1>

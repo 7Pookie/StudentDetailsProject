@@ -29,6 +29,7 @@ import UpdateRequest from './pages/UpdateRequest.jsx';
 import UpadateClubDetails from './pages/UpdateClubDetails.jsx'
 import FacultyDashboard from "./components/FacultyDashboard.jsx"
 import HomeAdmin from './pages/HomeAdmin/HomeAdmin.jsx';
+import HomeFaculty from './pages/HomeFaculty/HomeFaculty.jsx';
 
 function App() {
   return (
@@ -57,7 +58,7 @@ function App() {
         <Route path='/student/login' element={<StudentLogin />} />
         <Route path='/faculty/login' element={<FacultyLogin/>}/>
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
-        <Route path='/faculty/dashboard' element={<FacultyDashboard />} />
+        <Route path='/faculty/dashboard' element={<HomeFaculty />} />
         <Route path='/faculty/approve/:requestID' element={<ApprovePage />} />
         <Route path='/student/request/:requestID' element={<ViewRequest />} />
         <Route path='/student/request/:requestID/update' element={<UpdateRequest />} />
