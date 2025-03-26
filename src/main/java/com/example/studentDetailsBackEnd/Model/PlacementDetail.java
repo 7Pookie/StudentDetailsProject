@@ -32,7 +32,19 @@ public class PlacementDetail {
     @Column(name = "status", nullable = false)
     private String status="PENDING";
     
-    private String remark="";   
+    private String remark=""; 
+    
+    @Lob
+    @Column(columnDefinition = "LONGBLOB", name="offer_letter")
+    private byte[] offerLetter; 
+
+    public byte[] getOfferLetter() {
+        return offerLetter;
+    }
+
+    public void setOfferLetter(byte[] offerLetter) {
+        this.offerLetter = offerLetter;
+    }
 
     public PlacementDetail() {}
 

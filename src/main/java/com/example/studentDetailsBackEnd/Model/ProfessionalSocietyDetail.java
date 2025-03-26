@@ -30,7 +30,18 @@ public class ProfessionalSocietyDetail {
     private String status="PENDING";
     private String remark="";
 
-    // Getters and Setters
+    @Lob
+    @Column(columnDefinition = "LONGBLOB", name="offer_letter")
+    private byte[] offerLetter; 
+
+    public byte[] getOfferLetter() {
+        return offerLetter;
+    }
+
+    public void setOfferLetter(byte[] offerLetter) {
+        this.offerLetter = offerLetter;
+    }
+
     public int getSocietyDetailsID() { return societyDetailsID; }
     public void setSocietyDetailsID(int societyDetailsID) { this.societyDetailsID = societyDetailsID; }
 

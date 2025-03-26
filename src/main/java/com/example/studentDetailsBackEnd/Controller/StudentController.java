@@ -205,17 +205,22 @@ public class StudentController {
             }   
         }
 
-        else if(tableID==4){
+        else if (tableID == 4) {
             Optional<PlacementDetail> placementOpt = placementDetailRepository.findById(entryID);
-            if(placementOpt.isPresent()){
+            if (placementOpt.isPresent()) {
                 PlacementDetail placementDetail = placementOpt.get();
                 response.put("placementType", placementDetail.getPlacementType());
                 response.put("role", placementDetail.getRole());
                 response.put("companyName", placementDetail.getCompany().getCompanyName());
                 response.put("startDate", placementDetail.getStartDate().toString());
                 response.put("endDate", placementDetail.getEndDate().toString());
+        
+                // ✅ Add file download URL
+                String fileDownloadUrl = "http://localhost:8080/api/placements/" + entryID + "/file";
+                response.put("offerLetterUrl", fileDownloadUrl);
+            }
         }
-    }
+        
 
         else if(tableID == 5){
             Optional<ProfessionalSocietyDetail> societyOpt = professionalSocietyDetailRepository.findById(entryID);

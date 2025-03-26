@@ -1,5 +1,5 @@
 package com.example.studentDetailsBackEnd.DTO;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 
 public class CulturalDetailRequest {
@@ -11,6 +11,8 @@ public class CulturalDetailRequest {
     private String achievement;
     private String achievementDetails;
     private String otherDetails;
+    private MultipartFile file;
+
 
     public int getStudentID() {
         return studentID;
@@ -74,5 +76,13 @@ public class CulturalDetailRequest {
 
     public void setOtherDetails(String otherDetails) {
         this.otherDetails = otherDetails;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 }

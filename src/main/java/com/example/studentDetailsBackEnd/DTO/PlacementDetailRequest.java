@@ -1,19 +1,29 @@
 package com.example.studentDetailsBackEnd.DTO;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
+import org.springframework.web.multipart.MultipartFile;
+
 
 public class PlacementDetailRequest {
     private Integer studentID;
     private String placementType;
     private Integer companyID;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private String role;
     private String customCompanyName; 
+    private MultipartFile file;
     private String status;  
     private String remark;  
 
     public PlacementDetailRequest() {}
+
+    public MultipartFile getFile() { return file; }
+
+    public void setFile(MultipartFile file) { this.file = file; }
 
     public Integer getStudentID() {
         return studentID;

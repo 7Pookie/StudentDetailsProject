@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/professional-society")
@@ -70,7 +75,7 @@ public class ProfessionalSocietyDetailController {
      * ✅ Add a new Professional Society Detail entry
      */
     @PostMapping("/add")
-    public ResponseEntity<?> addProfessionalSocietyDetail(@RequestBody ProfessionalSocietyDetailRequest request) {
+    public ResponseEntity<?> addProfessionalSocietyDetail(@ModelAttribute ProfessionalSocietyDetailRequest request) {
         Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
         if (studentOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Student not found!");
@@ -81,7 +86,6 @@ public class ProfessionalSocietyDetailController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No faculty assigned to student!");
         }
 
-        // ✅ Handle Society Selection / Creation
         ProfessionalSociety society;
         if (request.getSocietyID() != null) {
             society = professionalSocietyRepository.findById(request.getSocietyID())
@@ -94,7 +98,6 @@ public class ProfessionalSocietyDetailController {
             return ResponseEntity.badRequest().body("❌ Society must be selected or entered.");
         }
 
-        // ✅ Handle Field Selection / Creation
         ProfessionalSocietyField field;
         if (request.getFieldID() != null) {
             field = professionalSocietyFieldRepository.findById(request.getFieldID())
@@ -117,6 +120,14 @@ public class ProfessionalSocietyDetailController {
         societyDetail.setAchievementDetails(request.getAchievementDetails());
         societyDetail.setStatus("PENDING");
 
+        if (request.getFile() != null && !request.getFile().isEmpty()) {
+            try {
+                societyDetail.setOfferLetter(request.getFile().getBytes());
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+            }
+        }
+
         ProfessionalSocietyDetail savedDetail = professionalSocietyDetailRepository.save(societyDetail);
         int entryID = savedDetail.getSocietyDetailsID();
 
@@ -138,6 +149,19 @@ public class ProfessionalSocietyDetailController {
 
         requestRepository.save(newRequest);
         return ResponseEntity.ok("✅ Professional Society Detail added & Request sent for approval!");
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getFile(@PathVariable int id) {
+        Optional<ProfessionalSocietyDetail> detailOpt = professionalSocietyDetailRepository.findById(id);  
+        if (detailOpt.isEmpty() || detailOpt.get().getOfferLetter() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
+                .body(detailOpt.get().getOfferLetter());
     }
 
     /**

@@ -129,6 +129,13 @@ public class FacultyController {
             requestData.put("Achievement", details.getAchievement());
             requestData.put("AchievementDetails", details.getAchievementDetails());
             requestData.put("Other Details", details.getOtherDetails());
+
+            if (details.getOfferLetter() != null) {
+                String fileUrl = "http://localhost:8080/api/technical-details/" + details.getID() + "/file";
+                requestData.put("Offer Letter", fileUrl);
+            } else {
+                requestData.put("Offer Letter", "No file uploaded");
+            }
         });
     } 
 
@@ -142,6 +149,13 @@ public class FacultyController {
             requestData.put("Achievement", details.getAchievement());
             requestData.put("AchievementDetails", details.getAchievementDetails());
             requestData.put("Other Details", details.getOtherDetails());
+
+            if (details.getOfferLetter() != null) {
+                String fileUrl = "http://localhost:8080/api/cultural-details/" + details.getID() + "/file";
+                requestData.put("Offer Letter", fileUrl);
+            } else {
+                requestData.put("Offer Letter", "No file uploaded");
+            }
         });
     }
 
@@ -153,6 +167,13 @@ public class FacultyController {
             requestData.put("Start Date", details.getStartDate());
             requestData.put("End Date", details.getEndDate());
             requestData.put("Role", details.getRole());
+
+            if (details.getOfferLetter() != null) {
+                String fileUrl = "http://localhost:8080/api/placements/" + details.getPlacementID() + "/file";
+                requestData.put("Offer Letter", fileUrl);
+            } else {
+                requestData.put("Offer Letter", "No file uploaded");
+            }
         });
     }
 
@@ -164,6 +185,13 @@ public class FacultyController {
             requestData.put("Date Joined", details.getDateJoined());
             requestData.put("Role", details.getRole());
             requestData.put("Achievement",details.getAchievementDetails());
+
+            if (details.getOfferLetter() != null) {
+                String fileUrl = "http://localhost:8080/api/professional-society/" + details.getSocietyDetailsID() + "/file";
+                requestData.put("Offer Letter", fileUrl);
+            } else {
+                requestData.put("Offer Letter", "No file uploaded");
+            }
         });
     }
     
@@ -178,6 +206,13 @@ public class FacultyController {
             requestData.put("Achievement", details.getAchievement());
             requestData.put("AchievementDetails", details.getAchievementDetails());
             requestData.put("Other Details", details.getOtherDetails());
+
+            if (details.getOfferLetter() != null) {
+                String fileUrl = "http://localhost:8080/api/sport-details/" + details.getSportEventDetailsId() + "/file";
+                requestData.put("Offer Letter", fileUrl);
+            } else {
+                requestData.put("Offer Letter", "No file uploaded");
+            }
         });
     }
 
@@ -190,6 +225,13 @@ public class FacultyController {
             requestData.put("Authors", details.getAuthors());
             requestData.put("ISBN/ISSN", details.getNumber());
             requestData.put("Publication Status", details.getPublicationStatus());
+
+            if (details.getOfferLetter() != null) {
+                String fileUrl = "http://localhost:8080/api/student-publications/" + details.getStudentPubID() + "/file";
+                requestData.put("Offer Letter", fileUrl);
+            } else {
+                requestData.put("Offer Letter", "No file uploaded");
+            }
         });
     }
     return ResponseEntity.ok(requestData);

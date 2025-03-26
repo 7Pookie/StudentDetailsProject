@@ -1,5 +1,5 @@
 package com.example.studentDetailsBackEnd.DTO;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 
 public class ProfessionalSocietyDetailRequest {
@@ -11,6 +11,8 @@ public class ProfessionalSocietyDetailRequest {
     private LocalDate dateJoined;
     private String role;
     private String achievementDetails;
+    private MultipartFile file;
+
 
     public Integer getStudentID() { return studentID; }
     public void setStudentID(Integer studentID) { this.studentID = studentID; }
@@ -35,4 +37,12 @@ public class ProfessionalSocietyDetailRequest {
 
     public String getAchievementDetails() { return achievementDetails; }
     public void setAchievementDetails(String achievementDetails) { this.achievementDetails = achievementDetails; }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 }

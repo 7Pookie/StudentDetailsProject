@@ -46,9 +46,96 @@ public class StudentPublication {
     @Column(name = "remark")
     private String remark = "";
 
-    // ✅ Helper method to set student by ID
+    @Lob
+    @Column(columnDefinition = "LONGBLOB", name="offer_letter")
+    private byte[] offerLetter;
+
+    public byte[] getOfferLetter() {
+        return offerLetter;
+    }
+
+    public void setOfferLetter(byte[] offerLetter) {
+        this.offerLetter = offerLetter;
+    }
+    
     public void setStudentById(int studentID) {
         this.student = new Student();
         this.student.setStudentID(studentID);
+    }
+
+    public String getRemark()
+    {
+        return remark;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public String getAuthors()
+    {
+        return authors;
+    }
+
+    public LocalDate getPublicationDate(){
+        return publicationDate;
+    }
+
+    public String getNumber(){
+        return number;
+    }
+
+    public String getPublicationStatus(){
+        return publicationStatus;
+    }
+
+    public void setStatus(String status){
+        this.status = status;
+    }
+
+    public void setRemark(String remark){
+        this.remark = remark;
+    }
+
+    public void setTitle(String title){
+        this.title = title;
+    }
+
+    public void setType(String type){
+        this.type = type;
+    }
+
+    public void setStudent(Student student) {    
+        this.student = student;
+    }
+
+    public void setAuthors(String authors){
+        this.authors = authors;
+    }
+
+    public void setPublicationDate(LocalDate publicationDate){
+        this.publicationDate= publicationDate;
+    }
+
+    public void setPublicationStatus(String publicationStatus){
+        this.publicationStatus= publicationStatus;
+    }
+
+    public void setNumber(String number){
+        this.number = number;
+    }
+
+    public void setStudentPubID(int studentPubID ){
+        this.studentPubID = studentPubID;
+    }
+
+    public int getStudentPubID(){
+        return studentPubID;
     }
 }

@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
@@ -55,7 +59,7 @@ public class CulturalDetailController {
     }
     
     @PostMapping("/add")
-    public ResponseEntity<?> addCulturalDetail(@RequestBody CulturalDetailRequest request) {
+    public ResponseEntity<?> addCulturalDetail(@ModelAttribute CulturalDetailRequest request) {
     System.out.println("Received student ID: " + request.getStudentID());
 
     if (request.getStudentID() == 0) {
@@ -93,6 +97,14 @@ public class CulturalDetailController {
     detail.setAchievementDetails(request.getAchievementDetails());
     detail.setOtherDetails(request.getOtherDetails());
 
+    if (request.getFile() != null && !request.getFile().isEmpty()) {
+        try {
+            detail.setOfferLetter(request.getFile().getBytes());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+        }
+    }
+
     CulturalDetail savedDetail = culturalDetailRepository.save(detail);
     int entryID = savedDetail.getCulturalDetailID();
 
@@ -115,6 +127,19 @@ public class CulturalDetailController {
     requestRepository.save(newRequest);
 
     return ResponseEntity.ok("Cultural Detail added & Request sent for approval!");
+}
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getFile(@PathVariable int id) {
+        Optional<CulturalDetail> detailOpt = culturalDetailRepository.findById(id);  // Fixed static reference
+        if (detailOpt.isEmpty() || detailOpt.get().getOfferLetter() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/pdf")
+            .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
+            .body(detailOpt.get().getOfferLetter());
 }
 
 

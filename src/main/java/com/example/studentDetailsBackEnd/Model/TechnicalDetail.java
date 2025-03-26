@@ -45,6 +45,22 @@ public class TechnicalDetail {
     @Column(nullable = true)
     private String remark = "";
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB", name="offer_letter")
+    private byte[] offerLetter; 
+
+
+    public int getID() {
+        return id;
+    }
+    public byte[] getOfferLetter() {
+        return offerLetter;
+    }
+
+    public void setOfferLetter(byte[] offerLetter) {
+        this.offerLetter = offerLetter;
+    }
+
     public TechnicalDetail() {}
 
     public TechnicalDetail(Student student,TechnicalEvents technicalEvent, EventCategory eventCategory, LocalDate eventDate, String role, String achievement, String achievementDetails, String otherDetails) {

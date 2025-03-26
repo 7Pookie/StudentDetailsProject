@@ -1,143 +1,135 @@
 package com.example.studentDetailsBackEnd.Controller;
 
-import com.example.studentDetailsBackEnd.Model.Student;
+import com.example.studentDetailsBackEnd.DTO.StudentPublicationDTO;
 import com.example.studentDetailsBackEnd.Model.StudentPublication;
+import com.example.studentDetailsBackEnd.Model.Student;
 import com.example.studentDetailsBackEnd.Model.Faculty;
-import com.example.studentDetailsBackEnd.Model.TableDetails;
 import com.example.studentDetailsBackEnd.Model.Request;
-import com.example.studentDetailsBackEnd.repository.StudentRepository;
 import com.example.studentDetailsBackEnd.repository.StudentPublicationRepository;
-import com.example.studentDetailsBackEnd.repository.RequestRepository;
+import com.example.studentDetailsBackEnd.repository.StudentRepository;
 import com.example.studentDetailsBackEnd.repository.TableDetailsRepository;
+import com.example.studentDetailsBackEnd.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.time.LocalDate;
+import java.io.IOException;
 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/student-publications")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class StudentPublicationController {
 
-    @Autowired private StudentPublicationRepository publicationRepository;
-    @Autowired private StudentRepository studentRepository;
-    @Autowired private TableDetailsRepository tableDetailsRepository;
-    @Autowired private RequestRepository requestRepository;
+    private final StudentPublicationRepository studentPublicationRepository;
+    private final StudentRepository studentRepository;
+    private final TableDetailsRepository tableDetailsRepository;
+    private final RequestRepository requestRepository;
 
-    /**
-     * ✅ Add a new student publication
-     */
+    @Autowired
+    public StudentPublicationController(StudentPublicationRepository studentPublicationRepository,
+                                     StudentRepository studentRepository,
+                                     TableDetailsRepository tableDetailsRepository,
+                                     RequestRepository requestRepository) {
+        this.studentPublicationRepository = studentPublicationRepository;
+        this.studentRepository = studentRepository;
+        this.tableDetailsRepository = tableDetailsRepository;
+        this.requestRepository = requestRepository;
+    }
+
     @PostMapping("/add")
-    @Transactional
-    public ResponseEntity<?> addPublication(@RequestBody Map<String, Object> requestBody) {
-        System.out.println("📥 Received Publication Request: " + requestBody);
+    public ResponseEntity<?> addPublication(@ModelAttribute StudentPublicationDTO request) {
+        System.out.println("Received student ID: " + request.getStudentID());
 
-    // ✅ Extract Student ID correctly
-        Map<String, Object> studentMap = (Map<String, Object>) requestBody.get("student");
-        if (studentMap == null || !studentMap.containsKey("studentID")) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ Student ID is missing."));
+        if (request.getStudentID() == 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid student ID received!");
         }
 
-        int studentID = (int) studentMap.get("studentID");
-
-    // ✅ Extract publication fields
-        String title = (String) requestBody.get("title");
-        String authors = (String) requestBody.get("authors");
-        String type = (String) requestBody.get("type");
-        String publicationStatus = (String) requestBody.get("publicationStatus");
-        String number = (String) requestBody.get("number");
-
-        LocalDate publicationDate;
-        try {
-            publicationDate = LocalDate.parse((String) requestBody.get("publicationDate"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ Invalid publication date format."));
-        }
-
-    // ✅ Validate required fields
-        if (title == null || title.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ Publication title is required."));
-        }
-
-        if (publicationDate == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ Publication date is required."));
-        }
-
-    // ✅ Fetch Student
-        Optional<Student> studentOpt = studentRepository.findById(studentID);
+        Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
         if (studentOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "❌ Student not found."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found!");
         }
-        Student student = studentOpt.get();
 
-    // ✅ Validate Faculty
+        Student student = studentOpt.get();
         Faculty faculty = student.getFaculty();
         if (faculty == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ No faculty assigned to student!"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No faculty assigned to student!");
         }
 
-    // ✅ Save StudentPublication Object
-        StudentPublication newPublication = new StudentPublication();
-        newPublication.setStudent(student);
-        newPublication.setTitle(title);
-        newPublication.setAuthors(authors);
-        newPublication.setType(type);
-        newPublication.setPublicationDate(publicationDate);
-        newPublication.setPublicationStatus(publicationStatus);
-        newPublication.setNumber(number);
-        newPublication.setStatus("PENDING");
+        StudentPublication publication = new StudentPublication();
+        publication.setStudent(student);
+        publication.setTitle(request.getTitle());
+        publication.setAuthors(request.getAuthors());
+        publication.setType(request.getType());
+        publication.setPublicationDate(request.getPublicationDate());
+        publication.setPublicationStatus(request.getPublicationStatus());
+        publication.setNumber(request.getNumber());
+        publication.setStatus("PENDING");
 
-        StudentPublication savedPublication = publicationRepository.save(newPublication);
+        if (request.getFile() != null && !request.getFile().isEmpty()) {
+            try {
+                publication.setOfferLetter(request.getFile().getBytes());
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+            }
+        }
+
+        StudentPublication savedPublication = studentPublicationRepository.save(publication);
         int entryID = savedPublication.getStudentPubID();
-        System.out.println("✅ Publication saved: " + savedPublication);
 
-    // ✅ Fetch Table ID
-        TableDetails tableDetails = tableDetailsRepository.findByTableName("student_publications");
-        if (tableDetails == null) {
-            return ResponseEntity.status(500).body("❌ Table entry for student_publications not found.");
+        Optional<Integer> tableIDOpt = Optional.ofNullable(tableDetailsRepository.findByTableName("student_publications"))
+                .map(table -> table.getTableID());
+
+        if (tableIDOpt.isEmpty()) {
+            return ResponseEntity.status(500).body("Table entry for student_publications not found.");
         }
-        int tableID = tableDetails.getTableID();
 
-    // ✅ Create Request Entry
+        int tableID = tableIDOpt.get();
+
         Request newRequest = new Request();
         newRequest.setStudent(student);
         newRequest.setFaculty(faculty);
-        newRequest.setTableDetails(tableDetails);
+        newRequest.setTableDetails(tableDetailsRepository.findById(tableID).get());
         newRequest.setEntryID(entryID);
         newRequest.setStatus("PENDING");
+
         requestRepository.save(newRequest);
 
-        return ResponseEntity.ok(Map.of("message", "✅ Publication added & Request sent for approval!", "publication", savedPublication));
+        return ResponseEntity.ok("Publication added & Request sent for approval!");
     }
 
-    /**
-     * ✅ Get all publications for a specific student
-     */
-    @GetMapping("/{studentID}")
-    public ResponseEntity<List<StudentPublication>> getPublications(@PathVariable int studentID) {
-        return ResponseEntity.ok(publicationRepository.findByStudent_StudentID(studentID));
-    }
-
-    /**
-     * ✅ Update publication status (e.g., Approved/Rejected)
-     */
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<String> updateStatus(@PathVariable int id, @RequestParam String status) {
-        Optional<StudentPublication> pubOpt = publicationRepository.findById(id);
-        if (pubOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Publication not found!");
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getFile(@PathVariable int id) {
+        Optional<StudentPublication> publicationOpt = studentPublicationRepository.findById(id);
+        if (publicationOpt.isEmpty() || publicationOpt.get().getOfferLetter() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        StudentPublication publication = pubOpt.get();
-        publication.setStatus(status);
-        publicationRepository.save(publication);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
+                .body(publicationOpt.get().getOfferLetter());
+    }
 
-        return ResponseEntity.ok("✅ Publication status updated successfully!");
+    @GetMapping("/{studentID}")
+    public ResponseEntity<List<StudentPublication>> getPublicationsByStudent(@PathVariable int studentID) {
+        return ResponseEntity.ok(studentPublicationRepository.findByStudent_StudentID(studentID));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> updateStatus(@PathVariable int id, @RequestParam String status) {
+        Optional<StudentPublication> publicationOpt = studentPublicationRepository.findById(id);
+        if (publicationOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publication not found!");
+        }
+
+        StudentPublication publication = publicationOpt.get();
+        publication.setStatus(status);
+        studentPublicationRepository.save(publication);
+
+        return ResponseEntity.ok("Publication status updated successfully!");
     }
 }

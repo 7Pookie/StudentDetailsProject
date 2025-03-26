@@ -1,5 +1,5 @@
 package com.example.studentDetailsBackEnd.DTO;
-
+import org.springframework.web.multipart.MultipartFile;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,5 +18,13 @@ public class StudentPublicationDTO {
     private String publicationStatus;
     private String status;
     private String remark;
+    private MultipartFile file;
 
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 }

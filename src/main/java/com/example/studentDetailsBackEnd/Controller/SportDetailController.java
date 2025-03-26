@@ -18,10 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/sport-details")
@@ -47,52 +50,54 @@ public class SportDetailController {
     private RequestRepository requestRepository;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addSportDetail(@RequestBody SportDetailRequest request) {
+    public ResponseEntity<?> addSportDetail(@ModelAttribute SportDetailRequest request) {
     System.out.println("📥 Received Request: " + request);
 
-    // ✅ Validate Student
     Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
     if (studentOpt.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Student not found!");
     }
     Student student = studentOpt.get();
 
-    // ✅ Validate Faculty
     Faculty faculty = student.getFaculty();
     if (faculty == null) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ No faculty assigned to student!");
     }
 
-    // ✅ Fetch Event by eventID instead of eventName
     Optional<SportEvents> eventOpt = sportEventsRepository.findById(request.getEventID());
     if (eventOpt.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Sport Event not found!");
     }
     SportEvents event = eventOpt.get();
 
-    // ✅ Fetch Category by eventCategoryID instead of eventCategoryName
     Optional<SportEventCategory> categoryOpt = sportCategoryRepository.findById(request.getEventCategoryID());
     if (categoryOpt.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Sport Event Category not found!");
     }
     SportEventCategory category = categoryOpt.get();
 
-    // ✅ Create SportDetail Entry
     SportDetail detail = new SportDetail(student, event, category, request.getEventDate(), 
                                          request.getRole(), request.getAchievement(), 
                                          request.getAchievementDetails(), request.getOtherDetails());
     detail.setStatus("PENDING");
+
+    if (request.getFile() != null && !request.getFile().isEmpty()) {
+        try {
+            detail.setOfferLetter(request.getFile().getBytes());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+        }
+    }
+
     SportDetail savedDetail = sportDetailRepository.save(detail);
     int entryID = savedDetail.getSportDetailID();
 
-    // ✅ Fetch Table ID for Sports Details
     TableDetails tableDetails = tableDetailsRepository.findByTableName("sport_details");
     if (tableDetails == null) {
         return ResponseEntity.status(500).body("❌ Table entry for sport_details not found.");
     }
     int tableID = tableDetails.getTableID();
 
-    // ✅ Create Request Entry
     Request newRequest = new Request();
     newRequest.setStudent(student);
     newRequest.setFaculty(faculty);
@@ -104,15 +109,24 @@ public class SportDetailController {
     return ResponseEntity.ok("✅ Sport Detail added & Request sent for approval!");
 }
 
-    
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getFile(@PathVariable int id) {
+        Optional<SportDetail> detailOpt = sportDetailRepository.findById(id);  
+        if (detailOpt.isEmpty() || detailOpt.get().getOfferLetter() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 
-    // ✅ Get all sport details
+        return ResponseEntity.ok()
+            .header("Content-Type", "application/pdf")
+            .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
+            .body(detailOpt.get().getOfferLetter());
+}
+
     @GetMapping("/all")
     public ResponseEntity<List<SportDetail>> getAllSportDetails() {
         return ResponseEntity.ok(sportDetailRepository.findAll());
     }
 
-    // ✅ Update status of a sport entry
     @PatchMapping("/{id}/status")
     public ResponseEntity<String> updateStatus(@PathVariable int id, @RequestParam String status) {
         Optional<SportDetail> detailOpt = sportDetailRepository.findById(id);
@@ -127,7 +141,6 @@ public class SportDetailController {
         return ResponseEntity.ok("✅ Status updated successfully!");
     }
 
-    // ✅ Get all sport event names
     @GetMapping("/event-names")
     public ResponseEntity<List<Map<String, Object>>> getEventNames() {
         List<Map<String, Object>> events = sportEventsRepository.findAll()
@@ -138,7 +151,6 @@ public class SportDetailController {
         return ResponseEntity.ok(events);
     }
 
-    // ✅ Get all sport event categories
     @GetMapping("/event-categories")
     public ResponseEntity<List<Map<String, Object>>> getEventCategories() {
         List<Map<String, Object>> categories = sportCategoryRepository.findAll()
@@ -149,7 +161,6 @@ public class SportDetailController {
         return ResponseEntity.ok(categories);
     }
 
-    // ✅ Get specific sport event by ID
     @GetMapping("/event/{id}")
     public ResponseEntity<SportEvents> getSportEventById(@PathVariable int id) {
         return sportEventsRepository.findById(id)
@@ -157,7 +168,6 @@ public class SportDetailController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ Add a new sport event
     @PostMapping("/event/add")
     public ResponseEntity<?> addSportEvent(@RequestBody SportEvents event) {
         if (event.getSportEventName() == null || event.getSportEventName().trim().isEmpty()) {

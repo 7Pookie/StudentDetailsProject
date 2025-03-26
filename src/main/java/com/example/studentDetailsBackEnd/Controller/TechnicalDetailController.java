@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
@@ -55,67 +59,88 @@ public class TechnicalDetailController {
     }
     
     @PostMapping("/add")
-    public ResponseEntity<?> addTechnicalDetail(@RequestBody TechnicalDetailRequest request) {
-    System.out.println("Received student ID: " + request.getStudentID());
+    public ResponseEntity<?> addTechnicalDetail(@ModelAttribute TechnicalDetailRequest request) {  // Changed from @RequestBody to @ModelAttribute
+        System.out.println("Received student ID: " + request.getStudentID());
 
-    if (request.getStudentID() == 0) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid student ID received!");
+        if (request.getStudentID() == 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid student ID received!");
+        }
+
+        Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
+        if (studentOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found!");
+        }
+
+        Student student = studentOpt.get();
+        Faculty faculty = student.getFaculty();
+        if (faculty == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No faculty assigned to student!");
+        }
+
+        TechnicalEvents event = null;
+        if (request.getEventID() != 0) {
+            event = technicalEventsRepository.findById(request.getEventID()).orElse(null);
+        }
+
+        EventCategory eventCategory = null;
+        if (request.getEventCategoryID() != 0) {
+            eventCategory = eventCategoryRepository.findById(request.getEventCategoryID()).orElse(null);
+        }
+
+        TechnicalDetail detail = new TechnicalDetail();
+        detail.setStudent(student);
+        detail.setEvent(event);
+        detail.setEventCategory(eventCategory);
+        detail.setEventDate(request.getEventDate());
+        detail.setRole(request.getRole());
+        detail.setAchievement(request.getAchievement());
+        detail.setAchievementDetails(request.getAchievementDetails());
+        detail.setOtherDetails(request.getOtherDetails());
+
+        if (request.getFile() != null && !request.getFile().isEmpty()) {
+            try {
+                detail.setOfferLetter(request.getFile().getBytes());
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+            }
+        }
+
+        TechnicalDetail savedDetail = technicalDetailRepository.save(detail);
+        int entryID = savedDetail.getTechnicalDetailID();
+
+        Optional<Integer> tableIDOpt = Optional.ofNullable(tableDetailsRepository.findByTableName("technical_event_details"))
+                .map(table -> table.getTableID());
+
+        if (tableIDOpt.isEmpty()) {
+            return ResponseEntity.status(500).body("Table entry for technical_details not found.");
+        }
+
+        int tableID = tableIDOpt.get();
+
+        Request newRequest = new Request();
+        newRequest.setStudent(student);
+        newRequest.setFaculty(faculty);
+        newRequest.setTableDetails(tableDetailsRepository.findById(tableID).get());
+        newRequest.setEntryID(entryID);
+        newRequest.setStatus("PENDING");
+
+        requestRepository.save(newRequest);
+
+        return ResponseEntity.ok("Technical Detail added & Request sent for approval!");
     }
 
-    Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
-    if (studentOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found!");
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getFile(@PathVariable int id) {
+        Optional<TechnicalDetail> detailOpt = technicalDetailRepository.findById(id);  // Fixed static reference
+        if (detailOpt.isEmpty() || detailOpt.get().getOfferLetter() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
+                .body(detailOpt.get().getOfferLetter());
     }
-
-    Student student = studentOpt.get();
-    Faculty faculty = student.getFaculty();
-    if (faculty == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No faculty assigned to student!");
-    }
-
-    TechnicalEvents event = null;
-    if (request.getEventID() != 0) {
-        event = technicalEventsRepository.findById(request.getEventID()).orElse(null);
-    }
-
-    EventCategory eventCategory = null;
-    if (request.getEventCategoryID() != 0) {
-        eventCategory = eventCategoryRepository.findById(request.getEventCategoryID()).orElse(null);
-    }
-
-    TechnicalDetail detail = new TechnicalDetail();
-    detail.setStudent(studentOpt.get());
-    detail.setEvent(event);
-    detail.setEventCategory(eventCategory);
-    detail.setEventDate(request.getEventDate());
-    detail.setRole(request.getRole());
-    detail.setAchievement(request.getAchievement());
-    detail.setAchievementDetails(request.getAchievementDetails());
-    detail.setOtherDetails(request.getOtherDetails());
-
-    TechnicalDetail savedDetail = technicalDetailRepository.save(detail);
-    int entryID = savedDetail.getTechnicalDetailID();
-
-    Optional<Integer> tableIDOpt = Optional.ofNullable(tableDetailsRepository.findByTableName("technical_event_details"))
-    .map(table -> table.getTableID());
-
-    if (tableIDOpt.isEmpty()) {
-    return ResponseEntity.status(500).body("Table entry for technical_details not found.");
-    }
-
-    int tableID = tableIDOpt.get();
-
-    Request newRequest = new Request();
-    newRequest.setStudent(student);
-    newRequest.setFaculty(faculty);
-    newRequest.setTableDetails(tableDetailsRepository.findById(tableID).get());
-    newRequest.setEntryID(entryID);
-    newRequest.setStatus("PENDING");
-
-    requestRepository.save(newRequest);
-
-    return ResponseEntity.ok("Technical Detail added & Request sent for approval!");
-}
 
 
     @GetMapping("/all")
@@ -148,4 +173,5 @@ public class TechnicalDetailController {
         
         return ResponseEntity.ok(categories);
     }
+
 }
