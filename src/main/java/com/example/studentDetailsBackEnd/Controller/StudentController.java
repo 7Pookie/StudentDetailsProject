@@ -1,11 +1,13 @@
 package com.example.studentDetailsBackEnd.Controller;
 
 import com.example.studentDetailsBackEnd.Model.Student;
+import com.example.studentDetailsBackEnd.Model.StudentPublication;
 import com.example.studentDetailsBackEnd.Model.CulturalDetail;
 import com.example.studentDetailsBackEnd.Model.ProfessionalSocietyDetail;
 import com.example.studentDetailsBackEnd.Model.PlacementDetail;
 import com.example.studentDetailsBackEnd.Service.StudentService;
 import com.example.studentDetailsBackEnd.repository.StudentRepository;
+import com.example.studentDetailsBackEnd.repository.StudentPublicationRepository;
 import com.example.studentDetailsBackEnd.repository.FacultyRepository;
 import com.example.studentDetailsBackEnd.repository.ProfessionalSocietyDetailRepository;
 import com.example.studentDetailsBackEnd.repository.TechnicalDetailRepository;  
@@ -67,6 +69,9 @@ public class StudentController {
 
     @Autowired
     private ProfessionalSocietyDetailRepository professionalSocietyDetailRepository;
+
+    @Autowired
+    private StudentPublicationRepository studentPublicationRepository;
 
     @Autowired
     public StudentController(StudentService studentService) {
@@ -238,6 +243,19 @@ public class StudentController {
             }
         }
 
+        else if(tableID==7){
+            Optional<StudentPublication> pubOpt = studentPublicationRepository.findById(entryID);
+            if (pubOpt.isPresent()) {
+                StudentPublication pubDetail = pubOpt.get();
+                response.put("title", pubDetail.getTitle());
+                response.put("type", pubDetail.getType());
+                response.put("number", pubDetail.getNumber());
+                response.put("publicationDate", pubDetail.getPublicationDate().toString());
+                response.put("authors", pubDetail.getAuthors());
+                response.put("publicationStatus", pubDetail.getPublicationStatus());
+            }
+        }
+
         return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.err.println("❌ Internal Server Error: " + e.getMessage());
@@ -301,6 +319,15 @@ public class StudentController {
                     SportDetail sportsDetail = sportsOpt.get();
                     requestData.put("eventName", sportsDetail.getEvent().getSportEventName());
                     requestData.put("role", sportsDetail.getRole());
+                }
+            }
+
+            else if(tableID ==7){
+                Optional<StudentPublication> pubOpt = studentPublicationRepository.findById(entryID);
+                if (pubOpt.isPresent()) {
+                    StudentPublication pubDetail = pubOpt.get();
+                    requestData.put("title", pubDetail.getTitle());
+                    requestData.put("type", pubDetail.getType());
                 }
             }
 
@@ -398,6 +425,22 @@ public class StudentController {
                     updated = true;
                 }
                 sportsDetailRepository.save(sportsDetails);
+            }
+        }
+
+        else if(tableID==7){
+            Optional<StudentPublication> pubOpt = studentPublicationRepository.findById(entryID);
+            if (pubOpt.isPresent()) {
+                StudentPublication pubDetails = pubOpt.get();
+                if (payload.containsKey("title")) {
+                    pubDetails.setTitle(payload.get("title"));
+                    updated = true;
+                }
+                if (payload.containsKey("type")) {
+                    pubDetails.setType(payload.get("type"));
+                    updated = true;
+                }
+                studentPublicationRepository.save(pubDetails);
             }
         }
 

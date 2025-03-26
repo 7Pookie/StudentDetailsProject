@@ -79,4 +79,9 @@ public class Student {
     public Faculty getFaculty() {
         return faculty;
     }
+
+    public void setStudentID(int studentID)
+    {
+        this.studentID = studentID;
+    }
 }

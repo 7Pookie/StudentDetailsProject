@@ -47,7 +47,7 @@ public class SportDetailController {
     private RequestRepository requestRepository;
 
     @PostMapping("/add")
-public ResponseEntity<?> addSportDetail(@RequestBody SportDetailRequest request) {
+    public ResponseEntity<?> addSportDetail(@RequestBody SportDetailRequest request) {
     System.out.println("📥 Received Request: " + request);
 
     // ✅ Validate Student

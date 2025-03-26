@@ -6,11 +6,13 @@ import com.example.studentDetailsBackEnd.repository.TechnicalDetailRepository;
 import com.example.studentDetailsBackEnd.repository.RequestRepository;
 import com.example.studentDetailsBackEnd.repository.CulturalDetailRepository;
 import com.example.studentDetailsBackEnd.repository.ProfessionalSocietyDetailRepository;
+import com.example.studentDetailsBackEnd.repository.StudentPublicationRepository;
 
 import com.example.studentDetailsBackEnd.repository.SportDetailRepository;
 import com.example.studentDetailsBackEnd.repository.PlacementDetailRepository;
 import com.example.studentDetailsBackEnd.Model.PlacementDetail;
 import com.example.studentDetailsBackEnd.Model.ProfessionalSocietyDetail;
+import com.example.studentDetailsBackEnd.Model.StudentPublication;
 
 import com.example.studentDetailsBackEnd.Model.CulturalDetail;
 import com.example.studentDetailsBackEnd.Model.SportDetail;
@@ -62,6 +64,8 @@ public class FacultyController {
     @Autowired
     private ProfessionalSocietyDetailRepository professionalSocietyDetailRepository;
 
+    @Autowired
+    private StudentPublicationRepository studentPublicationRepository;
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentFaculty(@AuthenticationPrincipal OAuth2User principal, HttpSession session) {
@@ -176,6 +180,18 @@ public class FacultyController {
             requestData.put("Other Details", details.getOtherDetails());
         });
     }
+
+    else if(tableID ==7){
+        Optional<StudentPublication> pubDetails = studentPublicationRepository.findById(entryID);
+        pubDetails.ifPresent(details -> {
+            requestData.put("Publication Title", details.getTitle());
+            requestData.put("Type", details.getType());
+            requestData.put("Publication Date", details.getPublicationDate());
+            requestData.put("Authors", details.getAuthors());
+            requestData.put("ISBN/ISSN", details.getNumber());
+            requestData.put("Publication Status", details.getPublicationStatus());
+        });
+    }
     return ResponseEntity.ok(requestData);
 }
 
@@ -240,6 +256,15 @@ public class FacultyController {
             });
         }
 
+        else if(tableID==7) {
+            Optional<StudentPublication> pubOpt = studentPublicationRepository.findById(entryID);
+            pubOpt.ifPresent(pubDetail -> {
+                pubDetail.setStatus(newStatus);
+                pubDetail.setRemark(facultyRemark);
+                studentPublicationRepository.save(pubDetail);
+            });
+        }
+
         return ResponseEntity.ok("Request " + newStatus + " with remarks saved.");
     }
 
@@ -296,6 +321,12 @@ public ResponseEntity<?> getRejectedRequests(@PathVariable int facultyID) {
         {
             Optional<SportDetail> sportDetails = sportDetailRepository.findById(entryID);
             facultyRemark = sportDetails.map(SportDetail::getRemark).orElse("No Remark");
+        }
+
+        else if(tableID==7)
+        {
+            Optional<StudentPublication> pubDetails = studentPublicationRepository.findById(entryID);
+            facultyRemark = pubDetails.map(StudentPublication::getRemark).orElse("No Remark");
         }
 
         requestData.put("remark", facultyRemark);
