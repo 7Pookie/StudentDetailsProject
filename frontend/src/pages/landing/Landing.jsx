@@ -33,6 +33,7 @@ const Landing = () => {
     };
 
     return(
+        
         <div className="landing-container">
             <div className="landing-content">
                 <h1 className="edu">Edutech</h1>

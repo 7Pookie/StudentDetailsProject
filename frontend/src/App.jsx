@@ -27,14 +27,15 @@ import ApprovePage from './pages/ApprovePage.jsx';
 import ViewRequest from './pages/ViewRequest.jsx';
 import UpdateRequest from './pages/UpdateRequest.jsx';
 import UpadateClubDetails from './pages/UpdateClubDetails.jsx'
-import FacultyDashboard from "./components/FacultyDashboard.jsx"
 import HomeAdmin from './pages/HomeAdmin/HomeAdmin.jsx';
 import HomeFaculty from './pages/HomeFaculty/HomeFaculty.jsx';
 
+
 function App() {
+  const [currentPage, setCurrentPage] = useState(window.location.pathname);
   return (
     <Router>
-      <Navbar />
+      { !(currentPage == "/student/login" || currentPage == "/admin/login" || currentPage == "/faculty/login" || currentPage == "/"  ) && <Navbar />}
       <Routes>
         <Route path="/" element={<Landing />}/> 
         <Route path='/student/profile/:studentId' element={<Profile />} />
