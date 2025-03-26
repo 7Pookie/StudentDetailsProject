@@ -14,25 +14,25 @@ const UpdateDetails = () => {
                   <h1 className='text-2xl font-bold'>Update Participation Details</h1>
                   <div className=" mt-10">
                     <Link to="/student/update-details/update-technical-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Technical Events"} updateCardImage={"https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Technical Events"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/4257/4257483.png"} />
                     </Link>
                     <Link to="/student/update-details/update-cultural-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Cultural Events"} updateCardImage={"https://plus.unsplash.com/premium_photo-1689838026693-02c808d3c794?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Cultural Events"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/1778/1778557.png"} />
                     </Link>
                     <Link to="/student/update-details/update-sport-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Sports Events"} updateCardImage={"https://images.unsplash.com/photo-1628779238951-be2c9f2a59f4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Sports Events"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/4163/4163679.png"} />
                     </Link>
                     <Link to="/student/update-details/update-professional-society-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Professional Societies"} updateCardImage={"https://plus.unsplash.com/premium_photo-1661756423422-4486e27eb6dd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Professional Societies"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/2562/2562464.png"} />
                     </Link>
                     <Link to="/student/update-details/update-publications-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Publications"} updateCardImage={"https://images.unsplash.com/photo-1504711331083-9c895941bf81?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Publications"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/2680/2680927.png"} />
                     </Link>
                     <Link to="/student/update-details/update-placement-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Placements"} updateCardImage={"https://images.unsplash.com/photo-1504711331083-9c895941bf81?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Placements"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/15188/15188745.png"} />
                     </Link>
                     <Link to="/student/update-details/update-club-details" style={{ textDecoration: "none" }}>
-                    <UpdateDetailCard updateCardText={"Clubs"} updateCardImage={"https://images.unsplash.com/photo-1556721546-9918b5b57fa2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} />
+                    <UpdateDetailCard updateCardText={"Clubs"} updateCardImage={"https://cdn-icons-png.flaticon.com/128/9495/9495009.png"} />
                     </Link>
                   </div>
                 </div>

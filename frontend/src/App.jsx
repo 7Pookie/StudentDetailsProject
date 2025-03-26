@@ -39,8 +39,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />}/> 
         <Route path='/student/profile/:studentId' element={<Profile />} />
-        <Route path='/student/update-details' element={<UpdateDetails />} />
         <Route path='/student/view-details' element={<ViewDetails />} />
+        <Route path='/student/update-details' element={<UpdateDetails />} />
         <Route path='/faculty/approvals' element={<Approvals />} />
         <Route path='/student/update-details/update-technical-details' element={<UpdateTechDetails />} />
         <Route path='/student/update-details/update-sport-details' element={<UpdateSportDetails />} />
@@ -61,6 +61,8 @@ function App() {
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path='/faculty/dashboard' element={<HomeFaculty />} />
         <Route path='/faculty/approve/:requestID' element={<ApprovePage />} />
+        <Route path='/student/request/:requestID' element={<ViewRequest />} />
+        <Route path='/student/request/:requestID/update' element={<UpdateRequest />} />
         <Route path='/student/request/:requestID' element={<ViewRequest />} />
         <Route path='/student/request/:requestID/update' element={<UpdateRequest />} />
         <Route />

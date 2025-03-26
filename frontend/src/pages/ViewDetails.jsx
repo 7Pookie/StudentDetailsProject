@@ -68,16 +68,28 @@ const ViewDetails = () => {
                                 <tbody>
                                     {requests[category].map((req, index) => (
                                         <tr key={index} className="border">
-                                            <td className="border px-4 py-2 text-center">{req.eventName}</td>
-                                            <td className="border px-4 py-2 text-center">{req.role}</td>
-                                            <td className={`border px-4 py-2 text-center font-bold ${req.status === "REJECTED"?"text-red-600": req.status === "APPROVED"?"text-green-600": "text-blue-600"}`}>
-                                                {req.status}
-                                            </td>
-                                            <td className="border px-4 py-2 text-center">
-                                                <Link to={`/student/request/${req.requestID}`} className="text-blue-500 underline">
-                                                    View Details
-                                                </Link>
-                                            </td>
+                                        <td className="border px-4 py-2 text-center">
+                                         {req.eventName || req.companyName || req.societyName || "N/A"}
+                                         </td>
+
+                                        <td className="border px-4 py-2 text-center">
+                                        {req.role || req.placementType || "N/A"}
+                                        </td>
+
+           
+                                        <td className={`border px-4 py-2 text-center font-bold 
+                                        ${req.status === "REJECTED" ? "text-red-600" :
+                                        req.status === "APPROVED" ? "text-green-600" :
+                                            "text-blue-600"}`}>
+                                        {req.status}
+                                        </td>
+
+            
+                                        <td className="border px-4 py-2 text-center">
+                                        <Link to={`/student/request/${req.requestID}`} className="text-blue-500 underline">
+                                             View Details
+                                        </Link>
+                                        </td>
                                         </tr>
                                     ))}
                                 </tbody>
