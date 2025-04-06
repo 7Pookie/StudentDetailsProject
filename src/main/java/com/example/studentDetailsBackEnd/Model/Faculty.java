@@ -25,12 +25,24 @@ public class Faculty {
         return name;
     } 
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public int getFacultyID() {
         return facultyID;
+    }
+
+    public void setFacultyID(int facultyID) {
+        this.facultyID = facultyID;
+    }
+
+    public void setFacultyId(int facultyID) {
+        this.facultyID = facultyID;
     }
 }
 

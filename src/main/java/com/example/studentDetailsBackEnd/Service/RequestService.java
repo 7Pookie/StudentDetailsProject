@@ -63,4 +63,9 @@ public class RequestService {
     public List<Request> getRequestsForFaculty(int facultyID) {
         return requestRepository.findByFacultyFacultyIDAndStatus(facultyID, "PENDING");
     }
+
+    public Optional<Request> getRequestById(int requestID) {
+        return requestRepository.findById(requestID);
+    }
+    
 }

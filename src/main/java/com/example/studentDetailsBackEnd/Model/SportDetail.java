@@ -157,11 +157,19 @@ public class SportDetail {
         return id;
     }
 
+    public void setSportDetailID(int id) {
+        this.id = id;
+    }
+
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
     public String getRemark() {
         return remark;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

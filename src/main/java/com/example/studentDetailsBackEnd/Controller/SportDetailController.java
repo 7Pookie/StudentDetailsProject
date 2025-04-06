@@ -1,30 +1,19 @@
 package com.example.studentDetailsBackEnd.Controller;
 
-import com.example.studentDetailsBackEnd.Model.SportDetail;
-import com.example.studentDetailsBackEnd.Model.Student;
-import com.example.studentDetailsBackEnd.Model.Faculty;
-import com.example.studentDetailsBackEnd.Model.SportEvents;
-import com.example.studentDetailsBackEnd.Model.SportEventCategory;
-import com.example.studentDetailsBackEnd.Model.Request;
-import com.example.studentDetailsBackEnd.repository.SportDetailRepository;
-import com.example.studentDetailsBackEnd.repository.SportEventsRepository;
-import com.example.studentDetailsBackEnd.repository.SportCategoryRepository;
-import com.example.studentDetailsBackEnd.repository.StudentRepository;
-import com.example.studentDetailsBackEnd.repository.TableDetailsRepository;
-import com.example.studentDetailsBackEnd.repository.RequestRepository;
-import com.example.studentDetailsBackEnd.Model.TableDetails;
+import com.example.studentDetailsBackEnd.Model.*;
 import com.example.studentDetailsBackEnd.DTO.SportDetailRequest;
+import com.example.studentDetailsBackEnd.repository.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/sport-details")
@@ -50,77 +39,91 @@ public class SportDetailController {
     private RequestRepository requestRepository;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addSportDetail(@ModelAttribute SportDetailRequest request) {
+public ResponseEntity<?> addSportDetail(@ModelAttribute SportDetailRequest request) {
     System.out.println("📥 Received Request: " + request);
+    System.out.println("Student Repository: " + studentRepository);
 
+    // Validate file
+    if (request.getFile() == null || request.getFile().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Please upload the certificate!");
+    }
+
+    // Validate student
     Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
+    System.out.println("Student Opt: " + studentOpt);
     if (studentOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Student not found!");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Student not found!");
     }
     Student student = studentOpt.get();
 
+    // Validate faculty
     Faculty faculty = student.getFaculty();
     if (faculty == null) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ No faculty assigned to student!");
     }
 
+    // Validate event
     Optional<SportEvents> eventOpt = sportEventsRepository.findById(request.getEventID());
     if (eventOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Sport Event not found!");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Sport Event not found!");
     }
     SportEvents event = eventOpt.get();
 
+    // Validate category
     Optional<SportEventCategory> categoryOpt = sportCategoryRepository.findById(request.getEventCategoryID());
     if (categoryOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Sport Event Category not found!");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Sport Event Category not found!");
     }
     SportEventCategory category = categoryOpt.get();
 
-    SportDetail detail = new SportDetail(student, event, category, request.getEventDate(), 
-                                         request.getRole(), request.getAchievement(), 
-                                         request.getAchievementDetails(), request.getOtherDetails());
-    detail.setStatus("PENDING");
+    try {
+        SportDetail detail = new SportDetail(
+            student, event, category,
+            request.getEventDate(),
+            request.getRole(),
+            request.getAchievement(),
+            request.getAchievementDetails(),
+            request.getOtherDetails()
+        );
+        detail.setStatus("PENDING");
+        detail.setOfferLetter(request.getFile().getBytes());
 
-    if (request.getFile() != null && !request.getFile().isEmpty()) {
-        try {
-            detail.setOfferLetter(request.getFile().getBytes());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+        SportDetail savedDetail = sportDetailRepository.save(detail);
+        int entryID = savedDetail.getSportDetailID();
+
+        TableDetails tableDetails = tableDetailsRepository.findByTableName("sport_details");
+        if (tableDetails == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Table entry for sport_details not found.");
         }
+
+        Request newRequest = new Request();
+        newRequest.setStudent(student);
+        newRequest.setFaculty(faculty);
+        newRequest.setTableDetails(tableDetails);
+        newRequest.setEntryID(entryID);
+        newRequest.setStatus("PENDING");
+        requestRepository.save(newRequest);
+
+        return ResponseEntity.ok("✅ Sport Detail added & Request sent for approval!");
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Unexpected error: " + e.getMessage());
     }
-
-    SportDetail savedDetail = sportDetailRepository.save(detail);
-    int entryID = savedDetail.getSportDetailID();
-
-    TableDetails tableDetails = tableDetailsRepository.findByTableName("sport_details");
-    if (tableDetails == null) {
-        return ResponseEntity.status(500).body("❌ Table entry for sport_details not found.");
-    }
-    int tableID = tableDetails.getTableID();
-
-    Request newRequest = new Request();
-    newRequest.setStudent(student);
-    newRequest.setFaculty(faculty);
-    newRequest.setTableDetails(tableDetails);
-    newRequest.setEntryID(entryID);
-    newRequest.setStatus("PENDING");
-    requestRepository.save(newRequest);
-
-    return ResponseEntity.ok("✅ Sport Detail added & Request sent for approval!");
 }
 
     @GetMapping("/{id}/file")
     public ResponseEntity<byte[]> getFile(@PathVariable int id) {
-        Optional<SportDetail> detailOpt = sportDetailRepository.findById(id);  
+        Optional<SportDetail> detailOpt = sportDetailRepository.findById(id);
         if (detailOpt.isEmpty() || detailOpt.get().getOfferLetter() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
         return ResponseEntity.ok()
-            .header("Content-Type", "application/pdf")
-            .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
-            .body(detailOpt.get().getOfferLetter());
-}
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
+                .body(detailOpt.get().getOfferLetter());
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<SportDetail>> getAllSportDetails() {

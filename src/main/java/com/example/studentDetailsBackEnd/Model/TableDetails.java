@@ -20,6 +20,10 @@ public class TableDetails {
     public void setTableID(int tableID) {
         this.tableID = tableID;
     }
+
+    public void setTableId(int tableID) {
+        this.tableID = tableID;
+    }
     
     public String getTableName() {
         return tableName;

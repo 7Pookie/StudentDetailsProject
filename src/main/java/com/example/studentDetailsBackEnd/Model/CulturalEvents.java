@@ -28,6 +28,10 @@ public class CulturalEvents {
         return eventID;
     }
 
+    public void setEventId(int eventID) {
+        this.eventID = eventID;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

@@ -3,189 +3,154 @@ package com.example.studentDetailsBackEnd.Controller;
 import com.example.studentDetailsBackEnd.DTO.ProfessionalSocietyDetailRequest;
 import com.example.studentDetailsBackEnd.Model.*;
 import com.example.studentDetailsBackEnd.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/professional-society")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@RequestMapping("/api/professional-society-details")
 public class ProfessionalSocietyDetailController {
 
-    @Autowired
-    private ProfessionalSocietyDetailRepository professionalSocietyDetailRepository;
+    private final ProfessionalSocietyDetailRepository societyDetailRepository;
+    private final ProfessionalSocietyRepository societyRepository;
+    private final ProfessionalSocietyFieldRepository fieldRepository;
+    private final StudentRepository studentRepository;
+    private final TableDetailsRepository tableDetailsRepository;
+    private final RequestRepository requestRepository;
 
-    @Autowired
-    private ProfessionalSocietyRepository professionalSocietyRepository;
-
-    @Autowired
-    private ProfessionalSocietyFieldRepository professionalSocietyFieldRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private TableDetailsRepository tableDetailsRepository;
-
-    @Autowired
-    private RequestRepository requestRepository;
-
-    /**
-     * ✅ Fetch all professional societies
-     */
-    @GetMapping("/societies")
-    public ResponseEntity<List<ProfessionalSociety>> getAllSocieties() {
-        return ResponseEntity.ok(professionalSocietyRepository.findAll());
+    public ProfessionalSocietyDetailController(
+            ProfessionalSocietyDetailRepository societyDetailRepository,
+            ProfessionalSocietyRepository societyRepository,
+            ProfessionalSocietyFieldRepository fieldRepository,
+            StudentRepository studentRepository,
+            TableDetailsRepository tableDetailsRepository,
+            RequestRepository requestRepository) {
+        this.societyDetailRepository = societyDetailRepository;
+        this.societyRepository = societyRepository;
+        this.fieldRepository = fieldRepository;
+        this.studentRepository = studentRepository;
+        this.tableDetailsRepository = tableDetailsRepository;
+        this.requestRepository = requestRepository;
     }
 
-    /**
-     * ✅ Add a new professional society
-     */
-    @PostMapping("/societies/add")
-    public ResponseEntity<ProfessionalSociety> addSociety(@RequestBody ProfessionalSociety society) {
-        return ResponseEntity.ok(professionalSocietyRepository.save(society));
-    }
-
-    /**
-     * ✅ Fetch all professional society fields
-     */
-    @GetMapping("/fields")
-    public ResponseEntity<List<ProfessionalSocietyField>> getAllFields() {
-        return ResponseEntity.ok(professionalSocietyFieldRepository.findAll());
-    }
-
-    /**
-     * ✅ Add a new professional society field
-     */
-    @PostMapping("/fields/add")
-    public ResponseEntity<ProfessionalSocietyField> addField(@RequestBody ProfessionalSocietyField field) {
-        return ResponseEntity.ok(professionalSocietyFieldRepository.save(field));
-    }
-
-    /**
-     * ✅ Add a new Professional Society Detail entry
-     */
     @PostMapping("/add")
-    public ResponseEntity<?> addProfessionalSocietyDetail(@ModelAttribute ProfessionalSocietyDetailRequest request) {
+    public ResponseEntity<?> addProfessionalSocietyDetail(@ModelAttribute ProfessionalSocietyDetailRequest request) throws IOException {
+        if (request.getFile() == null || request.getFile().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Please upload the certificate!");
+        }
+
         Optional<Student> studentOpt = studentRepository.findById(request.getStudentID());
         if (studentOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Student not found!");
         }
         Student student = studentOpt.get();
-        Faculty faculty = student.getFaculty();
-        if (faculty == null) {
+
+        if (student.getFaculty() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No faculty assigned to student!");
         }
 
         ProfessionalSociety society;
         if (request.getSocietyID() != null) {
-            society = professionalSocietyRepository.findById(request.getSocietyID())
-                    .orElseThrow(() -> new RuntimeException("❌ Society not found!"));
+            Optional<ProfessionalSociety> societyOpt = societyRepository.findById(request.getSocietyID());
+            if (societyOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Society must be selected or entered.");
+            }
+            society = societyOpt.get();
         } else if (request.getCustomSocietyName() != null && !request.getCustomSocietyName().trim().isEmpty()) {
             society = new ProfessionalSociety();
             society.setSocietyName(request.getCustomSocietyName());
-            society = professionalSocietyRepository.save(society);
+            society = societyRepository.save(society);
         } else {
-            return ResponseEntity.badRequest().body("❌ Society must be selected or entered.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Society must be selected or entered.");
         }
 
         ProfessionalSocietyField field;
         if (request.getFieldID() != null) {
-            field = professionalSocietyFieldRepository.findById(request.getFieldID())
-                    .orElseThrow(() -> new RuntimeException("❌ Field not found!"));
+            Optional<ProfessionalSocietyField> fieldOpt = fieldRepository.findById(request.getFieldID());
+            if (fieldOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Field must be selected or entered.");
+            }
+            field = fieldOpt.get();
         } else if (request.getCustomFieldName() != null && !request.getCustomFieldName().trim().isEmpty()) {
             field = new ProfessionalSocietyField();
             field.setFieldName(request.getCustomFieldName());
-            field = professionalSocietyFieldRepository.save(field);
+            field = fieldRepository.save(field);
         } else {
-            return ResponseEntity.badRequest().body("❌ Field must be selected or entered.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("❌ Field must be selected or entered.");
         }
 
-        // ✅ Create Professional Society Detail Entry
-        ProfessionalSocietyDetail societyDetail = new ProfessionalSocietyDetail();
-        societyDetail.setStudent(student);
-        societyDetail.setSociety(society);
-        societyDetail.setField(field);
-        societyDetail.setDateJoined(request.getDateJoined());
-        societyDetail.setRole(request.getRole());
-        societyDetail.setAchievementDetails(request.getAchievementDetails());
-        societyDetail.setStatus("PENDING");
+        ProfessionalSocietyDetail detail = new ProfessionalSocietyDetail();
+        detail.setStudent(student);
+        detail.setSociety(society);
+        detail.setField(field);
+        detail.setDateJoined(request.getDateJoined());
+        detail.setRole(request.getRole());
+        detail.setAchievementDetails(request.getAchievementDetails());
+        detail.setOfferLetter(request.getFile().getBytes());
+        detail.setStatus("PENDING");
+        societyDetailRepository.save(detail);
 
-        if (request.getFile() != null && !request.getFile().isEmpty()) {
-            try {
-                societyDetail.setOfferLetter(request.getFile().getBytes());
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error saving file");
-            }
-        }
+        TableDetails tableDetails = tableDetailsRepository.findByTableName("professional_society_details");
+        Request req = new Request();
+        req.setStudent(student);
+        req.setFaculty(student.getFaculty());
+        req.setTableDetails(tableDetails);
+        req.setEntryID(detail.getSocietyDetailsID());
+        req.setStatus("PENDING");
+        requestRepository.save(req);
 
-        ProfessionalSocietyDetail savedDetail = professionalSocietyDetailRepository.save(societyDetail);
-        int entryID = savedDetail.getSocietyDetailsID();
-
-        // ✅ Fetch Table ID for "professional_society_details"
-        Optional<Integer> tableIDOpt = Optional.ofNullable(tableDetailsRepository.findByTableName("professional_society_details"))
-                .map(TableDetails::getTableID);
-        if (tableIDOpt.isEmpty()) {
-            return ResponseEntity.status(500).body("Table entry for professional_society_details not found.");
-        }
-        int tableID = tableIDOpt.get();
-
-        // ✅ Create a Request Entry for Faculty Approval
-        Request newRequest = new Request();
-        newRequest.setStudent(student);
-        newRequest.setFaculty(faculty);
-        newRequest.setTableDetails(tableDetailsRepository.findById(tableID).get());
-        newRequest.setEntryID(entryID);
-        newRequest.setStatus("PENDING");
-
-        requestRepository.save(newRequest);
         return ResponseEntity.ok("✅ Professional Society Detail added & Request sent for approval!");
     }
 
-    @GetMapping("/{id}/file")
+    @GetMapping("/file/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable int id) {
-        Optional<ProfessionalSocietyDetail> detailOpt = professionalSocietyDetailRepository.findById(id);  
+        Optional<ProfessionalSocietyDetail> detailOpt = societyDetailRepository.findById(id);
         if (detailOpt.isEmpty() || detailOpt.get().getOfferLetter() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         return ResponseEntity.ok()
                 .header("Content-Type", "application/pdf")
-                .header("Content-Disposition", "attachment; filename=\"offer_letter.pdf\"")
                 .body(detailOpt.get().getOfferLetter());
     }
 
-    /**
-     * ✅ Fetch all Professional Society Details
-     */
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllProfessionalSocietyDetails() {
-        return ResponseEntity.ok(professionalSocietyDetailRepository.findAll());
+    @GetMapping("/allsocieties")
+    public ResponseEntity<List<ProfessionalSociety>> getAllSocieties() {
+        return ResponseEntity.ok(societyRepository.findAll());
     }
 
-    /**
-     * ✅ Update Status of a Professional Society Detail
-     */
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<String> updateStatus(@PathVariable int id, @RequestParam String status) {
-        Optional<ProfessionalSocietyDetail> societyDetailOpt = professionalSocietyDetailRepository.findById(id);
-        if (societyDetailOpt.isEmpty()) {
+    @PostMapping("/addSociety")
+    public ResponseEntity<ProfessionalSociety> addSociety(@RequestBody ProfessionalSociety society) {
+        return ResponseEntity.ok(societyRepository.save(society));
+    }
+
+    @GetMapping("/allfields")
+    public ResponseEntity<List<ProfessionalSocietyField>> getAllFields() {
+        return ResponseEntity.ok(fieldRepository.findAll());
+    }
+
+    @PostMapping("/addField")
+    public ResponseEntity<ProfessionalSocietyField> addField(@RequestBody ProfessionalSocietyField field) {
+        return ResponseEntity.ok(fieldRepository.save(field));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllProfessionalSocietyDetails() {
+        return ResponseEntity.ok(societyDetailRepository.findAll());
+    }
+
+    @PutMapping("/updateStatus/{id}/{status}")
+    public ResponseEntity<String> updateStatus(@PathVariable int id, @PathVariable String status) {
+        Optional<ProfessionalSocietyDetail> detailOpt = societyDetailRepository.findById(id);
+        if (detailOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Society Detail not found!");
         }
-
-        ProfessionalSocietyDetail societyDetail = societyDetailOpt.get();
-        societyDetail.setStatus(status);
-        professionalSocietyDetailRepository.save(societyDetail);
-
+        ProfessionalSocietyDetail detail = detailOpt.get();
+        detail.setStatus(status);
+        societyDetailRepository.save(detail);
         return ResponseEntity.ok("✅ Status updated successfully!");
     }
 }

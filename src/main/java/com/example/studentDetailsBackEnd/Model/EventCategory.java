@@ -31,4 +31,12 @@ public class EventCategory {
        return eventCategoryID;
     }
 
+    public void setEventCategoryId(int eventCategoryID) {
+        this.eventCategoryID = eventCategoryID;
+    }
+
+    public void setEventCategoryName(String eventCategoryName) {
+        this.eventCategoryName = eventCategoryName;
+    }
+
 }

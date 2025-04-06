@@ -1,6 +1,7 @@
 package com.example.studentDetailsBackEnd.repository;
 
 import com.example.studentDetailsBackEnd.Model.SportEvents;
+import com.example.studentDetailsBackEnd.Model.SportDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,5 @@ public interface SportEventsRepository extends JpaRepository<SportEvents, Intege
 
     @Query("SELECT t.sportEventName FROM SportEvents t ORDER BY t.sportEventName ASC")
     List<String> findAllSportEventNames();
+
 }

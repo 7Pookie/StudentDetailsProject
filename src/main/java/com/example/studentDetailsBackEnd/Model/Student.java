@@ -80,8 +80,43 @@ public class Student {
         return faculty;
     }
 
+    public void setStudentId(int studentID)
+    {
+        this.studentID = studentID;
+    }
     public void setStudentID(int studentID)
     {
         this.studentID = studentID;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDob(String dob) {        
+        this.dob = dob;
+    }
+
+    public void setEmail(String email) {        
+        this.email = email;
+    }
+
+    public void setRollNo(String rollNo) {        
+        this.rollNo = rollNo;
+    }
+
+    public void setProgram(String program) {        
+        this.program = program;
+    }
+
+    public void setBranch(String branch) {        
+        this.branch = branch;
+    }
+
+    public void setApaarId(String apaarid) {        
+        this.apaarid = apaarid;        
+    }
+
+    public void setFaculty(Faculty faculty) {        
+        this.faculty = faculty;        
     }
 }

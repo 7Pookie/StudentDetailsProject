@@ -31,4 +31,8 @@ public class TechnicalEvents {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void setEventId(int eventID) {
+        this.eventID = eventID;
+    }
 }

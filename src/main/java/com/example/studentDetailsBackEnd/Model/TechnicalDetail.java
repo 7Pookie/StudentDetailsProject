@@ -86,6 +86,14 @@ public class TechnicalDetail {
        return (int) student.getStudentID();
     }
 
+    public int getEventID() {
+        return (int) technicalEvent.getEventID();
+    }
+
+    public void setTechnicalDetailId(int id) {
+        this.id = id;
+    }
+
     public int getTechnicalEventDetailsId() {
         return id;
     }

@@ -35,4 +35,16 @@ public class SportEventCategory {
        return sportCategoryID;
     }
 
+    public void setSportEventCategoryID(int id) {
+        this.sportCategoryID = id;
+    }
+
+    public void setEventCategoryID(int id) {
+        this.sportCategoryID = id;
+    } 
+    
+    public void setEventCategoryName(String name) {
+        this.sportCategoryName = name;
+    }
+
 }

@@ -15,4 +15,6 @@ public interface TechnicalEventsRepository extends JpaRepository<TechnicalEvents
 
     @Query("SELECT t.name FROM TechnicalEvents t ORDER BY t.name ASC")
     List<String> findAllEventNames();
+
+    List<TechnicalEvents> findAll();
 }

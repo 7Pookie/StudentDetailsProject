@@ -91,6 +91,10 @@ public class CulturalDetail {
         return id;
     }
 
+    public void setCulturalDetailId(int id) {
+        this.id = id;
+    }
+
     public Student getStudent() {
         return student;
     }
